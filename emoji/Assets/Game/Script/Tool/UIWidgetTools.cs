@@ -37,7 +37,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public delegate void FillItemFun(Transform fillItem, object data);
 static public class UIWidgetTools {
 	static public void DestroyChildren(this Transform t) {

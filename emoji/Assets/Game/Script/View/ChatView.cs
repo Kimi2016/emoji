@@ -35,6 +35,7 @@ __________#_______####_______####______________
 */
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class ChatView : MonoBehaviour {
 
@@ -44,12 +45,19 @@ public class ChatView : MonoBehaviour {
 	private GameObject _btnVoiceInput;
 	private UIGrid _gridChatPanel;	//聊天grid
 	private GameObject _textTemplate; // 文字模板
-
+	private GameObject _audioTemplate;
+	private GameObject _voiceOn;
+	private MicroPhoneInput _microPhoneInput;
+	private bool _isVoicePressed;
+	private int _recordKey;
 	protected void RegistUIButton(GameObject button, UIEventListener.VoidDelegate action) {
 		UIEventListener listener = UIEventListener.Get(button);
 		listener.onClick += action;
 	}
-
+	protected void RegistUIPress(GameObject button, UIEventListener.BoolDelegate action) {
+		UIEventListener listener = UIEventListener.Get(button);
+		listener.onPress += action;
+	}
 	#region virtual 重写函数
 	void Awake() {
 
@@ -59,18 +67,24 @@ public class ChatView : MonoBehaviour {
 		_btnVoiceInput = transform.Find("Anchor_Bottom_Left/all_bf/voice_button ").gameObject;
 		_gridChatPanel = transform.Find("Anchor_Bottom_Left/all_bf/xinxikuang/Scroll View/Grid").GetComponent<UIGrid>();
 		_textTemplate = transform.Find("Anchor_Bottom_Left/all_bf/xinxikuang/Scroll View/text_template").gameObject;
+		_microPhoneInput = _btnVoiceInput.GetComponent<MicroPhoneInput>();
+		_audioTemplate = transform.Find("Anchor_Bottom_Left/all_bf/xinxikuang/Scroll View/audio_template").gameObject;
+		_voiceOn = transform.Find("Anchor_Bottom_Left/all_bf/voice_button /buttom_on").gameObject;
 
+		_audioTemplate.SetActive(false);
 		_textTemplate.SetActive(false);
+
 		#region 注册点击函数
 		RegistUIButton(_btnChatSend, ChatSendClick);
 		RegistUIButton(_btnTextInput, TextInputClick);
-		RegistUIButton(_btnVoiceInput, VoiceInputtClick);
+		RegistUIPress(_btnVoiceInput, VoiceInputtClick);
 		#endregion
 	}
 
 	void Start() {
+		_isVoicePressed = false;
 		_gridChatPanel.AddScrollViewChild(_textTemplate, @"[王五]:我们都#000好孩子#001", FillText);
-		//_gridChatPanel.AddScrollViewChild(_textTemplate, @"[王五]:我们都#000好孩子#001", FillText);
+
 	}
 
 	private void FillText(Transform fillItem, object data) {
@@ -80,6 +94,25 @@ public class ChatView : MonoBehaviour {
 		}
 	}
 
+	private void FillAudio(Transform fillItem, object data) {
+		GameObject audioButton = fillItem.Find("audio_sprite").gameObject;
+		UISpriteAnimation spriteAnimation = audioButton.GetComponent<UISpriteAnimation>();
+		StopAudioAnimation(spriteAnimation);
+
+		RegistUIButton(audioButton, (go) => {
+			Hashtable hh = data as Hashtable;
+			Byte[] wavData = SevenZipCompress.Decompress(hh["data"] as Byte[]);
+			_microPhoneInput.PlayClipData(wavData);
+			spriteAnimation.Play();
+			TimeOutUtil.getInstance().setTimeOut((float)hh["time"], () => {
+				StopAudioAnimation(spriteAnimation);
+			});
+		});
+	}
+	private void StopAudioAnimation(UISpriteAnimation spriteAnimation) {
+		spriteAnimation.ResetToBeginning();
+		spriteAnimation.Pause();
+	}
 	#endregion
 
 	#region click
@@ -91,10 +124,34 @@ public class ChatView : MonoBehaviour {
 		_iptChat.isSelected = false;
 		_iptChat.value = "";
 	}
-	private void VoiceInputtClick(GameObject sender) {
-	}
 	private void TextInputClick(GameObject sender) {
 		_iptChat.isSelected = true;
+	}
+	private void VoiceInputtClick(GameObject go, bool state) {
+		if (state) {
+			if (_isVoicePressed) return;
+			_isVoicePressed = true;
+			_voiceOn.SetActive(true);
+			_microPhoneInput.StartRecord();
+			_microPhoneInput.onRecordTimeOut = (waveData) => {
+				SendVoice(waveData);
+			};
+			_recordKey = TimeOutUtil.getInstance().SchedulerCSFun(() => { },0,0.1f);
+		}
+		else {
+			if (!_isVoicePressed) return;
+			SendVoice(_microPhoneInput.StopRecord());
+		}
+	}
+	private void SendVoice(Byte[] data) {
+		Hashtable hh = new Hashtable();
+		float time = TimeOutUtil.getInstance().UnSchedulerCSFun(_recordKey);
+		hh["data"] = data;
+		hh["time"] = time;
+		print("time is:" + time);
+		_gridChatPanel.AddScrollViewChild(_audioTemplate, hh, FillAudio);
+		_isVoicePressed = false;
+		_voiceOn.SetActive(false);
 	}
 	#endregion
 }
