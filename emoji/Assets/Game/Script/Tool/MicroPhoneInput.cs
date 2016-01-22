@@ -49,7 +49,7 @@ public class MicroPhoneInput : MonoBehaviour {
 	public float playTime = 0;
 	public Action<Byte[]> onRecordTimeOut = null;
 	private static string[] micArray = null;
-	private AudioSource audio;
+	private AudioSource _audio;
 
 	const int HEADER_SIZE = 44;
 	const int RECORD_TIME = 20;
@@ -57,7 +57,7 @@ public class MicroPhoneInput : MonoBehaviour {
 	const int FRENQUENCY = 2756;
 	// Use this for initialization
 	void Awake() {
-		audio = GetComponent<AudioSource>();
+		_audio = GetComponent<AudioSource>();
 		micArray = Microphone.devices;
 		foreach (string deviceStr in Microphone.devices) {
 			Debug.Log("device name = " + deviceStr);
@@ -68,17 +68,17 @@ public class MicroPhoneInput : MonoBehaviour {
 	}
 	public void StartRecord() {
 
-		audio.Stop();
+		_audio.Stop();
 		if (micArray.Length == 0) {
 			Debug.Log("No Record Device!");
 			return;
 		}
-		audio.loop = false;
-		audio.mute = true;
-		audio.clip = Microphone.Start(null, false, RECORD_TIME, FRENQUENCY); //2756 5512 11025 22050   44100
+		_audio.loop = false;
+		_audio.mute = true;
+		_audio.clip = Microphone.Start(null, false, RECORD_TIME, FRENQUENCY); //2756 5512 11025 22050   44100
 		while (!(Microphone.GetPosition(null) > 0)) {
 		}
-		audio.Play();
+		_audio.Play();
 		//倒计时  
 		StartCoroutine(TimeDown());
 	}
@@ -88,17 +88,17 @@ public class MicroPhoneInput : MonoBehaviour {
 			return null;
 		}
 		Microphone.End(null);
-		audio.Stop();
+		_audio.Stop();
 
 		return GetClipData();
 	}
 	public Byte[] GetClipData() {
-		if (audio.clip == null) {
+		if (_audio.clip == null) {
 			return null;
 		}
 		
-		float[] samples = new float[audio.clip.samples];
-		audio.clip.GetData(samples, 0);
+		float[] samples = new float[_audio.clip.samples];
+		_audio.clip.GetData(samples, 0);
 
 		float[] compressSamples = null;
 		bool isRecord = false;
@@ -175,24 +175,24 @@ public class MicroPhoneInput : MonoBehaviour {
 		}
 		//从float[]到Clip  
 		ResetAudio();
-		audio.clip.SetData(samples, 0);
-		audio.loop = false;
-		audio.mute = false;
-		audio.Play();
+		_audio.clip.SetData(samples, 0);
+		_audio.loop = false;
+		_audio.mute = false;
+		_audio.Play();
 	}
 	public void ResetAudio() {
-		if (audio.isPlaying) {
-			audio.Stop();
+		if (_audio.isPlaying) {
+			_audio.Stop();
 		}
 	}
 	void PlayRecord() {
-		if (audio.clip == null) {
+		if (_audio.clip == null) {
 			Debug.Log("audio.clip=null");
 			return;
 		}
-		audio.mute = false;
-		audio.loop = false;
-		audio.Play();
+		_audio.mute = false;
+		_audio.loop = false;
+		_audio.Play();
 		Debug.Log("PlayRecord");
 	}
 	public void LoadAndPlayRecord() {
@@ -203,7 +203,7 @@ public class MicroPhoneInput : MonoBehaviour {
 	public float GetAveragedVolume() {
 		float[] data = new float[256];
 		float a = 0;
-		audio.GetOutputData(data, 0);
+		_audio.GetOutputData(data, 0);
 		for (int i = 0; i < data.Length; i++) {
 			a += Mathf.Abs(data[i]);
 		}
