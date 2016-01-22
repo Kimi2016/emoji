@@ -112,6 +112,7 @@ public class ChatView : MonoBehaviour {
 	private void StopAudioAnimation(UISpriteAnimation spriteAnimation) {
 		spriteAnimation.ResetToBeginning();
 		spriteAnimation.Pause();
+		_microPhoneInput.ResetAudio();
 	}
 	#endregion
 

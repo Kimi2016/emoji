@@ -48,14 +48,13 @@ public class MicroPhoneInput : MonoBehaviour {
 	public float loudness = 0;
 	public float playTime = 0;
 	public Action<Byte[]> onRecordTimeOut = null;
-	private bool isCheckPlay = false;
 	private static string[] micArray = null;
 	private AudioSource audio;
 
 	const int HEADER_SIZE = 44;
 	const int RECORD_TIME = 20;
 	const int INT16_SCALE = 32767;
-	const int FRENQUENCY = 5512;
+	const int FRENQUENCY = 2756;
 	// Use this for initialization
 	void Awake() {
 		audio = GetComponent<AudioSource>();
@@ -76,7 +75,7 @@ public class MicroPhoneInput : MonoBehaviour {
 		}
 		audio.loop = false;
 		audio.mute = true;
-		audio.clip = Microphone.Start(null, false, RECORD_TIME, FRENQUENCY); //4000 5512 11025 22050   44100
+		audio.clip = Microphone.Start(null, false, RECORD_TIME, FRENQUENCY); //2756 5512 11025 22050   44100
 		while (!(Microphone.GetPosition(null) > 0)) {
 		}
 		audio.Play();
@@ -88,16 +87,11 @@ public class MicroPhoneInput : MonoBehaviour {
 			Debug.Log("No Record Device!");
 			return null;
 		}
-		//if (!Microphone.IsRecording(null)) {
-		//	return;
-		//}
-		//audio.clip.length = Microphone.GetPosition(null);
 		Microphone.End(null);
 		audio.Stop();
 
 		return GetClipData();
 	}
-
 	public Byte[] GetClipData() {
 		if (audio.clip == null) {
 			return null;
@@ -129,7 +123,7 @@ public class MicroPhoneInput : MonoBehaviour {
 		Byte[] outData = new byte[samples.Length * 2];
 
 		for (int i = 0; i < samples.Length; i++) {
-			Int16 temshort = (Int16)(samples[i] * INT16_SCALE * 8);
+			Int16 temshort = (Int16)(samples[i] * INT16_SCALE);
 			Byte[] temdata = BitConverter.GetBytes(temshort);
 			outData[i * 2] = temdata[0];
 			outData[i * 2 + 1] = temdata[1];
@@ -186,11 +180,10 @@ public class MicroPhoneInput : MonoBehaviour {
 		audio.mute = false;
 		audio.Play();
 	}
-	void ResetAudio() {
+	public void ResetAudio() {
 		if (audio.isPlaying) {
 			audio.Stop();
 		}
-		isCheckPlay = true;
 	}
 	void PlayRecord() {
 		if (audio.clip == null) {
@@ -201,7 +194,6 @@ public class MicroPhoneInput : MonoBehaviour {
 		audio.loop = false;
 		audio.Play();
 		Debug.Log("PlayRecord");
-
 	}
 	public void LoadAndPlayRecord() {
 		string recordPath = "your path";
@@ -216,16 +208,6 @@ public class MicroPhoneInput : MonoBehaviour {
 			a += Mathf.Abs(data[i]);
 		}
 		return a;
-	}
-
-	// Update is called once per frame  
-	void Update() {
-		if (isCheckPlay) {
-			if (!audio.isPlaying) {
-				audio.Stop();
-				isCheckPlay = false;
-			}
-		}
 	}
 
 	private IEnumerator TimeDown() {
