@@ -63,7 +63,7 @@ public class MicroPhoneInput : MonoBehaviour {
 			Debug.Log("device name = " + deviceStr);
 		}
 		if (micArray.Length == 0) {
-			Debug.LogError("no mic device");
+			Debug.Log("no mic device");
 		}
 	}
 	public void StartRecord() {
