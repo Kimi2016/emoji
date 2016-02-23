@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Game\Script\Datas\ChatDataManager.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\CRC.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\CommandLineParser.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\InBuffer.cs" />
@@ -87,11 +88,14 @@
     <Compile Include="Assets\Game\Script\Tool\SevenZipCompress.cs" />
     <Compile Include="Assets\Game\Script\Tool\TimeOutUtil.cs" />
     <Compile Include="Assets\Game\Script\Tool\UIWidgetTools.cs" />
-    <Compile Include="Assets\Game\Script\View\base\ScrollViewBaseItem.cs" />
-    <Compile Include="Assets\Game\Script\View\base\ScrollViewItemList.cs" />
     <Compile Include="Assets\Game\Script\View\base\UIBase.cs" />
-    <Compile Include="Assets\Game\Script\View\ChatView\Item\EmojiListItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatInfoItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\EmojiListItem.cs" />
     <Compile Include="Assets\Game\Script\View\ChatView\View\ChatView.cs" />
+    <Compile Include="Assets\Game\Script\View\ScrollBase\GridBaseItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ScrollBase\GridItemList.cs" />
+    <Compile Include="Assets\Game\Script\View\ScrollBase\TableBaseItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ScrollBase\TableItemList.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Game\EquipItems.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Game\EquipRandomItem.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Game\UICursor.cs" />

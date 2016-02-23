@@ -30,7 +30,7 @@ __________#_______####_______####______________
 * Filename: MicroPhoneInput
 * Created:  2016/1/21 10:29:29
 * Author:   HaYaShi ToShiTaKa
-* Purpose:  
+* Purpose:  麦克风录音组件
 * ==============================================================================
 */
 using System;
@@ -44,10 +44,11 @@ using System.Collections;
 
 public class MicroPhoneInput : MonoBehaviour {
 
-	public float sensitivity = 100;
-	public float loudness = 0;
-	public float playTime = 0;
 	public Action<Byte[]> onRecordTimeOut = null;
+	private bool _isNoDevice = false;
+	public bool isNoDevice {
+		get { return _isNoDevice; }
+	}
 	private static string[] micArray = null;
 	private AudioSource _audio;
 
@@ -55,27 +56,22 @@ public class MicroPhoneInput : MonoBehaviour {
 	const int RECORD_TIME = 20;
 	const int INT16_SCALE = 32767;
 	const int FRENQUENCY = 2756;
-	// Use this for initialization
 	void Awake() {
 		_audio = GetComponent<AudioSource>();
 		micArray = Microphone.devices;
-		foreach (string deviceStr in Microphone.devices) {
-			Debug.Log("device name = " + deviceStr);
-		}
 		if (micArray.Length == 0) {
-			Debug.Log("no mic device");
+			_isNoDevice = true;
 		}
 	}
 	public void StartRecord() {
 
 		_audio.Stop();
 		if (micArray.Length == 0) {
-			Debug.Log("No Record Device!");
 			return;
 		}
 		_audio.loop = false;
 		_audio.mute = true;
-		_audio.clip = Microphone.Start(null, false, RECORD_TIME, FRENQUENCY); //2756 5512 11025 22050   44100
+		_audio.clip = Microphone.Start(null, false, RECORD_TIME, FRENQUENCY);  //2756 5512 11025 22050   44100
 		while (!(Microphone.GetPosition(null) > 0)) {
 		}
 		_audio.Play();
@@ -84,7 +80,6 @@ public class MicroPhoneInput : MonoBehaviour {
 	}
 	public Byte[] StopRecord() {
 		if (micArray.Length == 0) {
-			Debug.Log("No Record Device!");
 			return null;
 		}
 		Microphone.End(null);
@@ -96,7 +91,7 @@ public class MicroPhoneInput : MonoBehaviour {
 		if (_audio.clip == null) {
 			return null;
 		}
-		
+
 		float[] samples = new float[_audio.clip.samples];
 		_audio.clip.GetData(samples, 0);
 
@@ -132,9 +127,9 @@ public class MicroPhoneInput : MonoBehaviour {
 		if (outData == null || outData.Length <= 0) {
 			return null;
 		}
-		print("out data:" + outData.Length);
+		Debug.Log("out data:" + outData.Length);
 		Byte[] compressData = SevenZipCompress.Compress(outData);
-		print("compress data" + compressData.Length);
+		Debug.Log("compress data" + compressData.Length);
 		return compressData;
 	}
 	public Byte[] ConvertInt16ToByte(Int16[] intData) {
@@ -187,18 +182,13 @@ public class MicroPhoneInput : MonoBehaviour {
 	}
 	void PlayRecord() {
 		if (_audio.clip == null) {
-			Debug.Log("audio.clip=null");
 			return;
 		}
 		_audio.mute = false;
 		_audio.loop = false;
 		_audio.Play();
-		Debug.Log("PlayRecord");
 	}
 	public void LoadAndPlayRecord() {
-		string recordPath = "your path";
-
-		//SavWav.LoadAndPlay (recordPath);  
 	}
 	public float GetAveragedVolume() {
 		float[] data = new float[256];
@@ -209,12 +199,11 @@ public class MicroPhoneInput : MonoBehaviour {
 		}
 		return a;
 	}
-
+	// 录音超时
 	private IEnumerator TimeDown() {
 		int time = 0;
 		while (time < RECORD_TIME) {
 			if (!Microphone.IsRecording(null)) { //如果没有录制  
-				Debug.Log("IsRecording false");
 				yield break;
 			}
 			yield return new WaitForSeconds(1);

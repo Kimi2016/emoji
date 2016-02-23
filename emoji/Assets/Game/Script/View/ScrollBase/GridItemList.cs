@@ -27,10 +27,10 @@ __________#_______####_______####______________
 
                 我们的未来没有BUG              
 * ==============================================================================
-* Filename: ScrollViewItemList
+* Filename: GridItemList
 * Created:  2016/2/1 18:06:43
 * Author:   HaYaShi ToShiTaKa
-* Purpose:  ScrollItem 的管理类
+* Purpose:  ScrollItem Grid类型 的管理类
 * ==============================================================================
 */
 using System;
@@ -38,19 +38,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScrollViewItemList<T> where T : ScrollViewBaseItem {
+public class GridItemList<T> where T : GridBaseItem {
 	public List<List<T>> items;
 	public IList datas;
 	public int itemCount;
 	public UIGrid grid;
 	private UIBase parentUI;
 	public GameObject itemTemplate;
-	public ScrollViewItemList(List<List<T>> items, IList datas, UIBase parentUI) {
+	public GridItemList(List<List<T>> items, UIBase parentUI) {
 		this.items = items;
-		this.datas = datas;
 		this.parentUI = parentUI;
 	}
-	public TYPE GetParentUI<TYPE>() where TYPE : UIBase {
+	public TYPE GetBaseUI<TYPE>() where TYPE : UIBase {
 		return parentUI as TYPE;
 	}
 	public int Length { get { return items.Count; } }

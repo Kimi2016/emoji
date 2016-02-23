@@ -27,10 +27,10 @@ __________#_______####_______####______________
 
                 我们的未来没有BUG              
 * ==============================================================================
-* Filename: ScrollViewBaseItem
+* Filename: GridBaseItem
 * Created:  2016/1/31 11:37:44
 * Author:   HaYaShi ToShiTaKa
-* Purpose:  Scroll View 的item基类
+* Purpose:  Scroll View Grid 类型 的item基类
 * ==============================================================================
 */
 using System;
@@ -38,7 +38,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScrollViewBaseItem : UIBase {
+public class GridBaseItem : UIBase {
 	private IList _datas;
 	private int _index;
 	private UIScrollView.Movement _moveType;
@@ -48,7 +48,7 @@ public class ScrollViewBaseItem : UIBase {
 	public int itemCount;//grid填满的数量
 	[HideInInspector]
 	public UIBase parentUI;
-	public T GetParentUI<T>() where T : UIBase {
+	public T GetBaseUI<T>() where T : UIBase {
 		return parentUI as T;
 	}
 	public int index { get { return _index; } }
@@ -81,7 +81,7 @@ public class ScrollViewBaseItem : UIBase {
 		if (_datas.Count <= 0) return;
 		FillItem(_datas, _index);
 	}
-	public void DeleteItem<T>(ScrollViewItemList<T> items) where T : ScrollViewBaseItem {
+	public void DeleteItem<T>(GridItemList<T> items) where T : GridBaseItem {
 		if (_datas == null) return;
 		if (_datas.Count <= 0) return;
 
