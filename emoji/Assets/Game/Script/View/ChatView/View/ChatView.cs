@@ -197,7 +197,7 @@ public class ChatView : UIBase {
 			_microPhoneInput.onRecordTimeOut = (waveData) => {
 				SendVoice(waveData);
 			};
-			_recordKey = TimeOutUtil.getInstance().SchedulerCSFun(() => { }, 0, 0.1f);
+			_recordKey = Director.GetInstance().scheduler.SchedulerCSFun(() => { }, 0, 0.1f);
 		}
 		else {
 			if (_microPhoneInput.isNoDevice) {
@@ -210,7 +210,7 @@ public class ChatView : UIBase {
 		}
 	}
 	private void SendVoice(Byte[] voiceData) {
-		float time = TimeOutUtil.getInstance().UnSchedulerCSFun(_recordKey);
+		float time = Director.GetInstance().scheduler.UnSchedulerCSFun(_recordKey);
 
 		ChatData data = new ChatData(_playName, "#999", enumChatType.CHAT_TYPE_SYSTEM, enumSysInfoType.INFO_TYPE_MSG, voiceData, 0);
 		ChatDataManager.GetInstance().AddChatData(data);

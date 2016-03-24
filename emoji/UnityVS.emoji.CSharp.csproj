@@ -64,7 +64,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Game\Script\Datas\ChatDataManager.cs" />
+    <Compile Include="Assets\Game\Script\Datas\Chat\ChatDataManager.cs" />
+    <Compile Include="Assets\Game\Script\GameConst\Enum\ClientEnum.cs" />
+    <Compile Include="Assets\Game\Script\Datas\DataManager.cs" />
+    <Compile Include="Assets\Game\Script\GameConst\GameConst.cs" />
+    <Compile Include="Assets\Game\Script\Main\Director.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\CRC.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\CommandLineParser.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\InBuffer.cs" />
@@ -84,10 +88,11 @@
     <Compile Include="Assets\Game\Script\Tool\7zip\Compress\RangeCoder\RangeCoderBit.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\ICoder.cs" />
-    <Compile Include="Assets\Game\Script\Tool\MicroPhoneInput.cs" />
+    <Compile Include="Assets\Game\Script\View\UIManager\UIManager.cs" />
+    <Compile Include="Assets\NGUICustom\MicroPhoneInput.cs" />
     <Compile Include="Assets\Game\Script\Tool\SevenZipCompress.cs" />
-    <Compile Include="Assets\Game\Script\Tool\TimeOutUtil.cs" />
-    <Compile Include="Assets\Game\Script\Tool\UIWidgetTools.cs" />
+    <Compile Include="Assets\Game\Script\Main\Scheduler.cs" />
+    <Compile Include="Assets\Game\Script\View\Tools\UIWidgetTools.cs" />
     <Compile Include="Assets\Game\Script\View\base\UIBase.cs" />
     <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatInfoItem.cs" />
     <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\EmojiListItem.cs" />

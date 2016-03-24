@@ -331,7 +331,7 @@ public class UIEmoji : UIBase {
 									Byte[] wavData = SevenZipCompress.Decompress(chatData.voiceData);
 									_microPhoneInput.PlayClipData(wavData);
 									spaFace.Play();
-									TimeOutUtil.getInstance().setTimeOut(chatData.time, () => {
+									Director.GetInstance().scheduler.SetTimeOut(chatData.time, () => {
 										StopAudioAnimation(spaFace);
 									});
 								});

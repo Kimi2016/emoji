@@ -3,18 +3,19 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 
-public class TimeOutUtil:MonoBehaviour
+public class Scheduler:MonoBehaviour
 {
-	private static TimeOutUtil _instance = null;
-	public static TimeOutUtil getInstance ()
+	private static Scheduler mInstance = null;
+	public static Scheduler MakeInstance ()
 	{
-		if (_instance == null) {
-			_instance = (TimeOutUtil)FindObjectOfType(typeof(TimeOutUtil));
+		if (mInstance == null) {
+			mInstance = Camera.main.gameObject.AddComponent<Scheduler>();
 		}
-		return _instance;
+		return mInstance;
 	}
 	void Awake() {
-		_keyBuffers = new List<int>();
+		mKeyBuffers = new List<int>();
+		mInstance = this;
 	}
 
 	#region scheduler
@@ -30,7 +31,7 @@ public class TimeOutUtil:MonoBehaviour
 		public object args;
 	}
 	private Dictionary<int, SchedulerCSharpFun> _schedulerCSharpFuns = new Dictionary<int, SchedulerCSharpFun>();
-	private List<int> _keyBuffers;
+	private List<int> mKeyBuffers;
 	private int GetUniqueKey() {
 		return _uniqueKey++;
 	}
@@ -55,7 +56,7 @@ public class TimeOutUtil:MonoBehaviour
 		csFun.args = args;
 		key = GetUniqueKey();
 		_schedulerCSharpFuns.Add(key, csFun);
-		_keyBuffers = new List<int>(_schedulerCSharpFuns.Keys);
+		mKeyBuffers = new List<int>(_schedulerCSharpFuns.Keys);
 		return key;
 	}
 	public int SchedulerCSFun(Action fun, float fistTime, float deltaTime) {
@@ -68,7 +69,7 @@ public class TimeOutUtil:MonoBehaviour
 		if (_schedulerCSharpFuns.ContainsKey(key)) {
 			result = _schedulerCSharpFuns[key].eclipseTime;
 			_schedulerCSharpFuns.Remove(key);
-			_keyBuffers.Remove(key);
+			mKeyBuffers.Remove(key);
 		}
 		return result;
 	}
@@ -76,8 +77,8 @@ public class TimeOutUtil:MonoBehaviour
 		if (_schedulerCSharpFuns.Count <= 0) return;
 
 		int key = 0;
-		for (int i = 0; i < _keyBuffers.Count; i++) {
-			key = _keyBuffers[i];
+		for (int i = 0; i < mKeyBuffers.Count; i++) {
+			key = mKeyBuffers[i];
 			SchedulerCSharpFun funObj;
 			if (_schedulerCSharpFuns.TryGetValue(key, out funObj)) {
 				funObj.realTime = funObj.realTime + Time.deltaTime;
@@ -98,7 +99,7 @@ public class TimeOutUtil:MonoBehaviour
 	}
 	#endregion
 	
-	public void setTimeOut (float delay, Action action)
+	public void SetTimeOut (float delay, Action action)
 	{
 		if(delay <= 0f){
 			if (action != null) {

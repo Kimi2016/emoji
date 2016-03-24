@@ -41,6 +41,11 @@ public class UIBase : MonoBehaviour {
 	private Dictionary<Type, UIBase> childUIs = null;
 	private UIBase _parentUI = null;
 
+	public bool isActive {
+		get {
+			return gameObject.activeSelf;
+		}
+	}
 	#region virtual
 	//阶段函数
 	public virtual void OnLoadedUI(bool close3dTouch, object args) {
@@ -99,11 +104,6 @@ public class UIBase : MonoBehaviour {
 	}
 	#endregion
 
-	/// <summary>
-	/// 在父节点中获取子模板脚本
-	/// </summary>
-	/// <typeparam name="T">字模板类</typeparam>
-	/// <returns>子模板脚本</returns>
 	public T GetUIBase<T>() where T : UIBase {
 		UIBase result;
 
@@ -112,11 +112,7 @@ public class UIBase : MonoBehaviour {
 		}
 		return null;
 	}
-	/// <summary>
-	/// 把子模板的脚本绑定在指定的Transform上
-	/// </summary>
-	/// <typeparam name="T">字模板类</typeparam>
-	/// <param name="ts">需要绑定子模板的Transform</param>
+
 	protected T RegistUIBase<T>(Transform ts) where T : UIBase {
 		return RegistUIBase<T>(ts, null);
 	}
