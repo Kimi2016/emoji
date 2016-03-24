@@ -66,7 +66,7 @@ public class ChatView : UIBase {
 	private List<string> _emojiNames;
 
 	#region virtual 重写函数
-	void Awake() {
+	public override void OnLoadedUI(bool close3dTouch, object args) {
 
 		_chatPanel = transform.Find("all_bf").gameObject;
 		_chatWidget = transform.Find("all_bf/xinxikuang/Container").GetComponent<UIWidget>();
@@ -102,7 +102,7 @@ public class ChatView : UIBase {
 		#endregion
 	}
 
-	void Start() {
+	public override void OnOpenUI(object args) {
 		_isVoicePressed = false;
 		RefreshChatPanel();
 		_gridEmojiPanel.CreateScrollView<EmojiListItem>(_emojiTemplate, _emojiNames, _emojiItems, this);
