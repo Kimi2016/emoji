@@ -41,6 +41,7 @@ using UnityEngine;
 public class TableItemList<T> where T : TableBaseItem {
 	public List<T> items;
 	public IList datas;
+	/* panel被填满的数量 */
 	public int itemCount;
 	public UITable table;
 	private UIBase parentUI;
@@ -64,20 +65,6 @@ public class TableItemList<T> where T : TableBaseItem {
 			return item;
 		}
 	}
-	public void AddItem<TYPE>(int index, TYPE data) {
-		if (datas.Count >= itemCount) {
-			datas.Insert(index, data);
-			T item = this[index];
-			item.UpdateItem();
-			UIScrollView scrollView = NGUITools.FindInParents<UIScrollView>(table.gameObject);
-			UIPanel panel = scrollView.GetComponent<UIPanel>();
-			panel.transform.localPosition = items[items.Count - 1].transform.localPosition;
-		}
-		else {
-			datas.Insert(index, data);
-			RefreshGrid();
-		}
-	}
 	public void UpdateItem(int index) {
 		T item = this[index];
 		if (item != null) {
@@ -90,8 +77,66 @@ public class TableItemList<T> where T : TableBaseItem {
 			item.DeleteItem<T>(this);
 		}
 	}
-	public void RefreshGrid() {
-		table.CreateScrollView<T>(itemTemplate, datas, this, parentUI);
+	
+	public bool RefreshTable() {
+		bool result = false;
+		if (table == null) {
+			return false;
+		}
+		UIScrollView scrollView = NGUITools.FindInParents<UIScrollView>(table.gameObject);
+		
+		UIPanel panel = scrollView.GetComponent<UIPanel>();
+		Vector3 pretablePos = table.transform.localPosition;
+		Vector3 preScrollPos = scrollView.transform.localPosition;
+		Vector2 preOffset = panel.clipOffset;
+		
+		if (items != null && datas.Count >= itemCount + 1) {
+			for (int i = 0; i < items.Count; i++) {
+				items[i].UpdateItem();
+				result = true;
+			}
+			table.Reposition();
+			table.transform.localPosition = pretablePos;
+			scrollView.transform.localPosition = preScrollPos;
+		}
+
+		return result;
+	}
+	public bool MoveUpTable() {
+		bool result = false;
+		if (table == null) {
+			return false;
+		}
+		if (items != null && datas.Count >= itemCount + 1) {
+			if (items.Count > 0) {
+				MoveUpItem();
+				result = true;
+			}
+		}
+
+		return result;
+	}
+	private void MoveUpItem(){
+		int sign = table.direction == UITable.Direction.Up ? 1 : -1;
+		T targetItem = items[0];
+		Vector3 targetPos = targetItem.transform.localPosition;
+		T moveItem = items[items.Count - 1];
+		moveItem.FillItem(datas, 0);
+		UIWidget tmpWidget = moveItem.GetComponent<UIWidget>();
+		int height = tmpWidget.height;
+		targetPos.y -= targetItem.GetComponent<UIWidget>().height;
+
+		for (int i = 0; i < items.Count; i++) {
+			Vector3 tmpPos = items[i].transform.localPosition;
+			tmpPos.y += sign * height;
+			items[i].transform.localPosition = tmpPos;
+			items[i].index += 1;
+		}
+
+		items.Remove(moveItem);
+		items.Insert(0, moveItem);
+		targetPos.y += height;
+		moveItem.transform.localPosition = targetPos;
 	}
 
 }

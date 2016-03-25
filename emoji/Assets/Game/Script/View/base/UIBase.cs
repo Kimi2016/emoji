@@ -40,11 +40,18 @@ using UnityEngine;
 public class UIBase : MonoBehaviour {
 	private Dictionary<Type, UIBase> childUIs = null;
 	private UIBase _parentUI = null;
-
+	private EventDispatcher mDispathcer;
+	protected UIManager uiManager;
+	private List<EnumEventDispathcer> mEventList;
 	public bool isActive {
 		get {
 			return gameObject.activeSelf;
 		}
+	}
+
+	protected void RegisterEvent(EnumEventDispathcer eventType,Action<object> action){
+		mDispathcer.RegisterEvent(eventType, action);
+		mEventList.Add(eventType);
 	}
 	#region virtual
 	//阶段函数
@@ -55,6 +62,9 @@ public class UIBase : MonoBehaviour {
 		if (GetParentUI<UIBase>() == null) {
 			gameObject.SetActive(true);
 		}
+		mDispathcer = Director.GetInstance().eventDispatcher;
+		uiManager = Director.GetInstance().uiManager;
+		mEventList = new List<EnumEventDispathcer>();
 	}
 
 	public virtual void OnOpenUI(object args) {
@@ -77,6 +87,10 @@ public class UIBase : MonoBehaviour {
 			item.Value.OnFreeUI();
 		}
 		childUIs.Clear();
+		for (int i = 0; i < mEventList.Count; i++) {
+			mDispathcer.UnRegisterEvent(mEventList[i]);
+		}
+		mEventList.Clear();
 	}
 	#endregion
 

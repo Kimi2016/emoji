@@ -44,6 +44,7 @@ public class Director : MonoBehaviour {
 		}
 		return mInstance;
 	}
+
 	#region include some game manager
 	private Scheduler mScheduler;
 	public Scheduler scheduler {
@@ -51,18 +52,25 @@ public class Director : MonoBehaviour {
 			return mScheduler;
 		}
 	}
-
 	private UIManager mUIManager;
 	public UIManager uiManager {
 		get {
 			return mUIManager;
 		}
 	}
+	private EventDispatcher mEventDispatcher;
+	public EventDispatcher eventDispatcher {
+		get {
+			return mEventDispatcher;
+		}
+	}
 	#endregion
 
 	void Start() {
+		mInstance = this;
 		mScheduler = Scheduler.MakeInstance();
 		mUIManager = UIManager.MakeInstance();
+		mEventDispatcher = EventDispatcher.MakeInstance();
 		mUIManager.OpenView(EnumUIName.ChatView);
 	}
 	void Update() { 

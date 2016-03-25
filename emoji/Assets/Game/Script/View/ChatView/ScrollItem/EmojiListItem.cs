@@ -42,13 +42,14 @@ public class EmojiListItem : GridBaseItem {
 	public UISprite spItem;
 	public override void FindItem() {
 		base.FindItem();
-		spItem = gameObject.GetComponent<UISprite>();
+		spItem = transform.Find("face").GetComponent<UISprite>();
 	}
 	public override void FillItem(IList datas, int index) {
 		base.FillItem(datas, index);
-		GetBaseUI<ChatView>().FillEmoji(this, datas[index]);
-		RegistUIButton(gameObject, (go) => {
-			Debug.Log(index);
-		});
+		string text = datas[index].ToString();
+		spItem.spriteName = text;
+		text = "#" + datas[index].ToString().Substring(0,3);
+		UnRegistUIButton(spItem.gameObject);
+		GetBaseUI<ChatDetailView>().FillEmoji(this, text);
 	}
 }

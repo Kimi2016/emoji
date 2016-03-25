@@ -40,11 +40,24 @@ using UnityEngine;
 
 public class GridItemList<T> where T : GridBaseItem {
 	public List<List<T>> items;
-	public IList datas;
+	public ICollection datas;
 	public int itemCount;
 	public UIGrid grid;
 	private UIBase parentUI;
 	public GameObject itemTemplate;
+	private UIPanel _panel;
+	public UIPanel panel {
+		set {
+			preScrollPos = value.transform.localPosition;
+			preOffset = value.clipOffset;
+			_panel = value;
+		}
+		get {
+			return _panel;
+		}
+	}
+	private Vector3 preScrollPos;
+	private Vector2 preOffset;
 	public GridItemList(List<List<T>> items, UIBase parentUI) {
 		this.items = items;
 		this.parentUI = parentUI;
@@ -53,7 +66,7 @@ public class GridItemList<T> where T : GridBaseItem {
 		return parentUI as TYPE;
 	}
 	public int Length { get { return items.Count; } }
-	private T this[int index] {
+	public T this[int index] {
 		get {
 			T item = null;
 			for (int i = 0; i < Length; i++) {
@@ -64,17 +77,6 @@ public class GridItemList<T> where T : GridBaseItem {
 				}
 			}
 			return item;
-		}
-	}
-	public void AddItem<TYPE>(int index, TYPE data) {
-		if (datas.Count >= itemCount) {
-			datas.Insert(index, data);
-			T item = this[index];
-			item.UpdateItem();
-		}
-		else {
-			datas.Insert(index, data);
-			RefreshGrid();
 		}
 	}
 	public void UpdateItem(int index) {
@@ -89,8 +91,33 @@ public class GridItemList<T> where T : GridBaseItem {
 			item.DeleteItem<T>(this);
 		}
 	}
-	public void RefreshGrid() {
-		grid.CreateScrollView<T>(itemTemplate, datas, this, parentUI);
+	public bool IsItemFull() {
+		return items != null && datas.Count >= itemCount + 1;
+	}
+	public bool RefreshGrid() {
+		bool result = false;
+		if (IsItemFull()) {
+			for (int i = 0; i < Length; i++) {
+				for (int j = 0; j < items[i].Count; j++) {
+					items[i][j].UpdateItem();
+					result = true;
+				}
+			}
+			panel.transform.localPosition = preScrollPos;
+			panel.clipOffset = preOffset;
+			if (panel.onClipMove != null) {
+				panel.onClipMove(panel);
+			}
+		}
+		
+		return result;
+	}
+	public void ForceRefresh() {
+		for (int i = 0; i < Length; i++) {
+			for (int j = 0; j < items[i].Count; j++) {
+				items[i][j].UpdateItem();
+			}
+		}
 	}
 
 }

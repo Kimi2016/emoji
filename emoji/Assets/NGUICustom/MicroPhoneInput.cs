@@ -91,7 +91,7 @@ public class MicroPhoneInput : MonoBehaviour {
 		if (_audio.clip == null) {
 			return null;
 		}
-
+		
 		float[] samples = new float[_audio.clip.samples];
 		_audio.clip.GetData(samples, 0);
 

@@ -49,7 +49,14 @@ public class TableBaseItem : UIBase {
 	public T GetBaseUI<T>() where T : UIBase {
 		return parentUI as T;
 	}
-	public int index { get { return _index; } }
+	public int index { 
+		get { 
+			return _index; 
+		}
+		set {
+			_index = value;
+		}
+	}
 	public UITable table {
 		set {
 			_table = value;
@@ -60,7 +67,7 @@ public class TableBaseItem : UIBase {
 	}
 	public virtual void FillItem(IList datas, int index) {
 		_datas = datas;
-		_index = index;
+		this.index = index;
 		UnRegistUIButton(gameObject);
 	}
 	public void UpdateItem() {

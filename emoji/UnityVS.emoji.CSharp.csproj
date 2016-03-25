@@ -13,13 +13,11 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.0.2f1</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -65,10 +63,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Game\Script\Datas\Chat\ChatDataManager.cs" />
-    <Compile Include="Assets\Game\Script\GameConst\Enum\ClientEnum.cs" />
     <Compile Include="Assets\Game\Script\Datas\DataManager.cs" />
+    <Compile Include="Assets\Game\Script\GameConst\Enum\ClientEnum.cs" />
     <Compile Include="Assets\Game\Script\GameConst\GameConst.cs" />
     <Compile Include="Assets\Game\Script\Main\Director.cs" />
+    <Compile Include="Assets\Game\Script\Main\Scheduler.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\CRC.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\CommandLineParser.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\InBuffer.cs" />
@@ -88,19 +87,29 @@
     <Compile Include="Assets\Game\Script\Tool\7zip\Compress\RangeCoder\RangeCoderBit.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Compress\RangeCoder\RangeCoderBitTree.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\ICoder.cs" />
-    <Compile Include="Assets\Game\Script\View\UIManager\UIManager.cs" />
-    <Compile Include="Assets\NGUICustom\MicroPhoneInput.cs" />
     <Compile Include="Assets\Game\Script\Tool\SevenZipCompress.cs" />
-    <Compile Include="Assets\Game\Script\Main\Scheduler.cs" />
-    <Compile Include="Assets\Game\Script\View\Tools\UIWidgetTools.cs" />
-    <Compile Include="Assets\Game\Script\View\base\UIBase.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatCommonTalkItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatDetailItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatHistoryItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatHonorItem.cs" />
     <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatInfoItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatPetItem.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\ChatTaskItem.cs" />
     <Compile Include="Assets\Game\Script\View\ChatView\ScrollItem\EmojiListItem.cs" />
     <Compile Include="Assets\Game\Script\View\ChatView\View\ChatView.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\View\ChildView\ChatDetailView.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\View\ChildView\ChatUIChatPanel.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\View\ChildView\ChatUIExpSlider.cs" />
+    <Compile Include="Assets\Game\Script\View\ChatView\View\ChildView\ChatUIPopMenu.cs" />
     <Compile Include="Assets\Game\Script\View\ScrollBase\GridBaseItem.cs" />
     <Compile Include="Assets\Game\Script\View\ScrollBase\GridItemList.cs" />
     <Compile Include="Assets\Game\Script\View\ScrollBase\TableBaseItem.cs" />
     <Compile Include="Assets\Game\Script\View\ScrollBase\TableItemList.cs" />
+    <Compile Include="Assets\Game\Script\View\Tools\InputUtility.cs" />
+    <Compile Include="Assets\Game\Script\View\Tools\UIWidgetTools.cs" />
+    <Compile Include="Assets\Game\Script\View\UIManager\EventDispatcher.cs" />
+    <Compile Include="Assets\Game\Script\View\UIManager\UIManager.cs" />
+    <Compile Include="Assets\Game\Script\View\base\UIBase.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Game\EquipItems.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Game\EquipRandomItem.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\InventorySystem\Game\UICursor.cs" />
@@ -126,7 +135,7 @@
     <Compile Include="Assets\NGUI\Examples\Scripts\Other\OpenURLOnClick.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\Other\PanWithMouse.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\Other\PlayIdleAnimations.cs" />
-    <Compile Include="Assets\NGUI\Examples\Scripts\Other\SetColorOnSelection.cs" />
+    <Compile Include="Assets\NGUI\Examples\Scripts\Other\SetColorPickerColor.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\Other\Spin.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\Other\SpinWithMouse.cs" />
     <Compile Include="Assets\NGUI\Examples\Scripts\Other\Tutorial5.cs" />
@@ -167,6 +176,7 @@
     <Compile Include="Assets\NGUI\Scripts\Interaction\UISavedOption.cs" />
     <Compile Include="Assets\NGUI\Scripts\Interaction\UIScrollBar.cs" />
     <Compile Include="Assets\NGUI\Scripts\Interaction\UIScrollView.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Interaction\UIShowControlScheme.cs" />
     <Compile Include="Assets\NGUI\Scripts\Interaction\UISlider.cs" />
     <Compile Include="Assets\NGUI\Scripts\Interaction\UISoundVolume.cs" />
     <Compile Include="Assets\NGUI\Scripts\Interaction\UITable.cs" />
@@ -210,6 +220,7 @@
     <Compile Include="Assets\NGUI\Scripts\Tweening\TweenOrthoSize.cs" />
     <Compile Include="Assets\NGUI\Scripts\Tweening\TweenPosition.cs" />
     <Compile Include="Assets\NGUI\Scripts\Tweening\TweenRotation.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Tweening\TweenRotationOne.cs" />
     <Compile Include="Assets\NGUI\Scripts\Tweening\TweenScale.cs" />
     <Compile Include="Assets\NGUI\Scripts\Tweening\TweenTransform.cs" />
     <Compile Include="Assets\NGUI\Scripts\Tweening\TweenVolume.cs" />
@@ -220,6 +231,7 @@
     <Compile Include="Assets\NGUI\Scripts\UI\UIAnchor.cs" />
     <Compile Include="Assets\NGUI\Scripts\UI\UIAtlas.cs" />
     <Compile Include="Assets\NGUI\Scripts\UI\UICamera.cs" />
+    <Compile Include="Assets\NGUI\Scripts\UI\UIColorPicker.cs" />
     <Compile Include="Assets\NGUI\Scripts\UI\UIFont.cs" />
     <Compile Include="Assets\NGUI\Scripts\UI\UIInput.cs" />
     <Compile Include="Assets\NGUI\Scripts\UI\UIInputOnGUI.cs" />
@@ -236,7 +248,10 @@
     <Compile Include="Assets\NGUI\Scripts\UI\UITexture.cs" />
     <Compile Include="Assets\NGUI\Scripts\UI\UITooltip.cs" />
     <Compile Include="Assets\NGUI\Scripts\UI\UIViewport.cs" />
+    <Compile Include="Assets\NGUICustom\MicroPhoneInput.cs" />
+    <Compile Include="Assets\NGUICustom\NGUITextCustom.cs" />
     <Compile Include="Assets\NGUICustom\UIEmoji.cs" />
+    <Compile Include="Assets\NGUICustom\UILabelCustom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
@@ -255,7 +270,8 @@
     <None Include="Assets\NGUI\Examples\Shaders\Unlit - Depth Cutout.shader" />
     <None Include="Assets\NGUI\Examples\Shaders\Unlit - Depth.shader" />
     <None Include="Assets\NGUI\Examples\Shaders\Unlit - Masked Colored.shader" />
-    <None Include="Assets\NGUI\ReadMe - 3.8.2.txt" />
+    <None Include="Assets\NGUI\ReadMe - 3.9.0.txt" />
+    <None Include="Assets\NGUI\Resources\Shaders\Clip - shader.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored (TextureClip).shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 1.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 2.shader" />
@@ -281,6 +297,5 @@
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 3.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed.shader" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
 </Project>

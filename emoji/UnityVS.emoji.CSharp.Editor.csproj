@@ -143,6 +143,7 @@
     <Compile Include="Assets\NGUI\Scripts\Editor\TweenTransformEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\TweenVolumeEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\TweenWidthEditor.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Editor\TypewriterEffectEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UI2DSpriteEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UIAnchorEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UIAtlasInspector.cs" />
@@ -154,6 +155,7 @@
     <Compile Include="Assets\NGUI\Scripts\Editor\UIButtonMessageEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UICameraEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UICameraTool.cs" />
+    <Compile Include="Assets\NGUI\Scripts\Editor\UIColorPickerEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UICreateNewUIWizard.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UICreateWidgetWizard.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UIDragObjectEditor.cs" />
@@ -193,6 +195,7 @@
     <Compile Include="Assets\NGUI\Scripts\Editor\UIWidgetContainerEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UIWidgetInspector.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UIWrapContentEditor.cs" />
+    <Compile Include="Assets\NGUICustom\Editor\UILabelCustomInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
@@ -211,7 +214,8 @@
     <None Include="Assets\NGUI\Examples\Shaders\Unlit - Depth Cutout.shader" />
     <None Include="Assets\NGUI\Examples\Shaders\Unlit - Depth.shader" />
     <None Include="Assets\NGUI\Examples\Shaders\Unlit - Masked Colored.shader" />
-    <None Include="Assets\NGUI\ReadMe - 3.8.2.txt" />
+    <None Include="Assets\NGUI\ReadMe - 3.9.0.txt" />
+    <None Include="Assets\NGUI\Resources\Shaders\Clip - shader.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored (TextureClip).shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 1.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Premultiplied Colored 2.shader" />

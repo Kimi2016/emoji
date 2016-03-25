@@ -206,6 +206,7 @@ public abstract class UITweener : MonoBehaviour
 		{
 			mFactor = Mathf.Clamp01(mFactor);
 			Sample(mFactor, true);
+			enabled = false;
 
 			if (current == null)
 			{
@@ -235,10 +236,6 @@ public abstract class UITweener : MonoBehaviour
 
 				current = before;
 			}
-
-			// Disable this script unless the function calls above changed something
-			if (duration == 0f || (mFactor == 1f && mAmountPerDelta > 0f || mFactor == 0f && mAmountPerDelta < 0f))
-				enabled = false;
 		}
 		else Sample(mFactor, false);
 	}
@@ -254,6 +251,12 @@ public abstract class UITweener : MonoBehaviour
 	/// <summary>
 	/// Convenience function -- set a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).
 	/// </summary>
+	
+	public void SetOnFinished (EventDelegate.Callback del, bool oneShot) { EventDelegate.Set(onFinished, del, oneShot); }
+
+	/// <summary>
+	/// Convenience function -- set a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).
+	/// </summary>
 
 	public void SetOnFinished (EventDelegate del) { EventDelegate.Set(onFinished, del); }
 
@@ -262,6 +265,12 @@ public abstract class UITweener : MonoBehaviour
 	/// </summary>
 
 	public void AddOnFinished (EventDelegate.Callback del) { EventDelegate.Add(onFinished, del); }
+
+	/// <summary>
+	/// Convenience function -- add a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).
+	/// </summary>
+	
+	public void AddOnFinished (EventDelegate.Callback del, bool oneShot) { EventDelegate.Add(onFinished, del, oneShot); }
 
 	/// <summary>
 	/// Convenience function -- add a new OnFinished event delegate (here for to be consistent with RemoveOnFinished).

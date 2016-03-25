@@ -39,3 +39,8 @@ using System.Collections.Generic;
 public enum EnumUIName { 
 	ChatView = 0,
 }
+
+public enum EnumEventDispathcer { 
+	ChatViewRefreshPanel,
+	ChatViewRefreshHistory,
+}

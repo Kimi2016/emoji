@@ -680,11 +680,12 @@ public class EventDelegate
 	/// Assign a new event delegate.
 	/// </summary>
 
-	static public EventDelegate Set (List<EventDelegate> list, Callback callback)
+	static public EventDelegate Set (List<EventDelegate> list, Callback callback, bool oneShot = false)
 	{
 		if (list != null)
 		{
 			EventDelegate del = new EventDelegate(callback);
+			del.oneShot = oneShot;
 			list.Clear();
 			list.Add(del);
 			return del;
