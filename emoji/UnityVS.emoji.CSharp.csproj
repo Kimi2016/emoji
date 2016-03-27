@@ -252,6 +252,30 @@
     <Compile Include="Assets\NGUICustom\NGUITextCustom.cs" />
     <Compile Include="Assets\NGUICustom\UIEmoji.cs" />
     <Compile Include="Assets\NGUICustom\UILabelCustom.cs" />
+    <Compile Include="Assets\uLua\Core\CheckType.cs" />
+    <Compile Include="Assets\uLua\Core\GenerateEventAssembly.cs" />
+    <Compile Include="Assets\uLua\Core\Lua.cs" />
+    <Compile Include="Assets\uLua\Core\LuaBase.cs" />
+    <Compile Include="Assets\uLua\Core\LuaDLL.cs" />
+    <Compile Include="Assets\uLua\Core\LuaException.cs" />
+    <Compile Include="Assets\uLua\Core\LuaFunction.cs" />
+    <Compile Include="Assets\uLua\Core\LuaGlobalAttribute.cs" />
+    <Compile Include="Assets\uLua\Core\LuaHideAttribute.cs" />
+    <Compile Include="Assets\uLua\Core\LuaRegistrationHelper.cs" />
+    <Compile Include="Assets\uLua\Core\LuaScriptException.cs" />
+    <Compile Include="Assets\uLua\Core\LuaStatic.cs" />
+    <Compile Include="Assets\uLua\Core\LuaTable.cs" />
+    <Compile Include="Assets\uLua\Core\LuaUserData.cs" />
+    <Compile Include="Assets\uLua\Core\Metatables.cs" />
+    <Compile Include="Assets\uLua\Core\MethodWrapper.cs" />
+    <Compile Include="Assets\uLua\Core\ObjectTranslator.cs" />
+    <Compile Include="Assets\uLua\Core\ProxyType.cs" />
+    <Compile Include="Assets\uLua\Examples\01_HelloWorld\HelloWorld.cs" />
+    <Compile Include="Assets\uLua\Examples\02_CreateGameObject\CreateGameObject.cs" />
+    <Compile Include="Assets\uLua\Examples\03_AccessingLuaVariables\AccessingLuaVariables.cs" />
+    <Compile Include="Assets\uLua\Examples\04_ScriptsFromFile\ScriptsFromFile.cs" />
+    <Compile Include="Assets\uLua\Examples\05_CallLuaFunction\CallLuaFunction.cs" />
+    <Compile Include="Assets\uLua\Examples\06_LuaCoroutines\LuaCoroutines.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
@@ -296,6 +320,9 @@
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 2.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 3.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed.shader" />
+    <None Include="Assets\uLua\Examples\04_ScriptsFromFile\04_ScriptsFromFile.lua.txt" />
+    <None Include="Assets\uLua\README.txt" />
+    <None Include="Assets\uLua\Source\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
 </Project>
