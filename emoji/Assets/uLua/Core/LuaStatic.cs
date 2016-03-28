@@ -14,23 +14,21 @@ namespace LuaInterface
 	public class LuaStatic
 	{
 		public static readonly Dictionary<long, object> objs = new Dictionary<long, object>();
+		public static readonly Dictionary<object, int> objBack = new Dictionary<object, int>();
+		public static int objsRefId = 0;
+		public const string ObjectCacheTable = "objectCache";
 		public static object GetObj(IntPtr luaState, int index) {
 			switch (LuaDLL.lua_type(luaState, index)) {
 				case LuaTypes.LUA_TNIL:
 					return null;
-
 				case LuaTypes.LUA_TBOOLEAN:
 					return LuaDLL.lua_toboolean(luaState, index);
-
 				case LuaTypes.LUA_TLIGHTUSERDATA:
 					return LuaDLL.lua_touserdata(luaState, index);
-
 				case LuaTypes.LUA_TNUMBER:
 					return LuaDLL.lua_tonumber(luaState, index);
-
 				case LuaTypes.LUA_TSTRING:
 					return LuaDLL.lua_tostring(luaState, index);
-
 				case LuaTypes.LUA_TUSERDATA: {
 						object obj2;
 						IntPtr ptr = LuaDLL.lua_touserdata(luaState, index);
@@ -48,15 +46,20 @@ namespace LuaInterface
 		}
 		public static int addGameObject2Lua(IntPtr L, object obj, string metatable) {
 			if (obj == null) {
-				LuaDLL.lua_pushnil(L);
+				LuaDLL.lua_pushnil(L); 
 				return 1;
 			}
-			if (objs.ContainsValue(obj)) {
-				return 1;
+			if (objBack.ContainsKey(obj)) {
+				int index = objBack[obj];
+				return GetUserDataFromCache(L, index);
 			}
 			IntPtr ptr = LuaDLL.lua_newuserdata(L, 1);
+			CacheUserData(L, LuaDLL.lua_gettop(L));
+
 			Marshal.WriteByte(ptr, 1);
-			objs[ptr.ToInt64()] = obj;
+			long ptrKey = ptr.ToInt64();
+			objs[ptrKey] = obj;
+			objBack[obj] = objsRefId++;
 			LuaDLL.lua_getglobal(L, metatable);
 			if (LuaDLL.lua_isnil(L, -1)) {
 				LuaDLL.lua_pop(L, 1);
@@ -65,6 +68,36 @@ namespace LuaInterface
 				LuaDLL.lua_setmetatable(L, -2);
 			}
 			return 1;
+		}
+		private static int GetUserDataFromCache(IntPtr L, int index) {
+			int result = 1;
+			LuaDLL.lua_getfield(L, LuaIndexes.LUA_REGISTRYINDEX, ObjectCacheTable);
+			LuaDLL.lua_pushnumber(L, index);
+			LuaDLL.lua_gettable(L, -2);
+			return result;
+		}
+		private static int CacheUserData(IntPtr L, int lo) {
+			int result = 1;
+			LuaDLL.lua_getfield(L, LuaIndexes.LUA_REGISTRYINDEX, ObjectCacheTable);
+			LuaDLL.lua_pushnumber(L, objsRefId);
+			LuaDLL.lua_pushvalue(L, lo);
+			LuaDLL.lua_settable(L, -3);
+			LuaDLL.lua_pop(L, 1);
+			return result;
+		}
+		public static int GameObjectGC(IntPtr L) {
+			RemoveGameObjectOnGC(LuaDLL.lua_touserdata(L, 1));
+			return 0;
+		}
+		public static void RemoveGameObjectOnGC(IntPtr idptr) {
+			RemoveGameObject(idptr);
+		}
+		public static void RemoveGameObject(IntPtr idptr) {
+			long key = idptr.ToInt64();
+			if (objs.ContainsKey(key)) {
+				objs.Remove(key);
+				objBack.Remove(objs[key]);
+			}
 		}
 		public static int traceback(IntPtr L, string err = "Lua traceback:") {
 			LuaDLL.lua_getglobal(L, "debug");

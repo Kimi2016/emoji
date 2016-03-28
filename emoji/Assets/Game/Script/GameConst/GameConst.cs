@@ -42,6 +42,9 @@ public class GameConst {
 		public const string UI_URL = "UI/";
 		public const string UI_ROOT = "UI/UI Root";
 	}
+	static public class LuaClass {
+		public const string DIRECTORY_URL = "lua/Director.lua";
+	}
 	public static Dictionary<enumChatType, string> ChannelNameDict = new Dictionary<enumChatType, string> {
 		{enumChatType.CHANEL_CURRENT,"当前"},
 		{enumChatType.CHANEL_WORLD,"世界"},

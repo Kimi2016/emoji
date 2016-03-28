@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.0.2f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -66,6 +68,8 @@
     <Compile Include="Assets\Game\Script\Datas\DataManager.cs" />
     <Compile Include="Assets\Game\Script\GameConst\Enum\ClientEnum.cs" />
     <Compile Include="Assets\Game\Script\GameConst\GameConst.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\LuaDirector.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\LuaRegister.cs" />
     <Compile Include="Assets\Game\Script\Main\Director.cs" />
     <Compile Include="Assets\Game\Script\Main\Scheduler.cs" />
     <Compile Include="Assets\Game\Script\Tool\7zip\Common\CRC.cs" />
@@ -278,6 +282,8 @@
     <Compile Include="Assets\uLua\Examples\06_LuaCoroutines\LuaCoroutines.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Game\Resources\lua\Director.lua.txt" />
+    <None Include="Assets\Game\Resources\lua\class.lua.txt" />
     <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
     <None Include="Assets\NGUI\Examples\Atlases\Refractive\Refractive Font - Header.txt" />
     <None Include="Assets\NGUI\Examples\Atlases\Refractive\Refractive Font - Normal.txt" />
@@ -324,5 +330,6 @@
     <None Include="Assets\uLua\README.txt" />
     <None Include="Assets\uLua\Source\README.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
 </Project>

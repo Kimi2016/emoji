@@ -1,0 +1,26 @@
+local director = mtDirector.GetInstance()
+
+Director = class("Director",function()
+    return director
+end)
+
+function Director.ctor(self)
+    -- 这里是成员变量
+    
+    -- 这里是property
+    self.value = {
+        get = function()
+            return self:GetValue()
+        end,
+        set = function(value)
+            self:SetValue(value)
+        end,        
+    }
+    -- 这里设置成员函数
+
+end
+local instance = Director.New()
+
+function Director.GetInstance()
+    return instance
+end

@@ -77,6 +77,8 @@ namespace LuaInterface
             LuaDLL.lua_pushstdcallcfunction(L, dofileFunction);
             LuaDLL.lua_setfield(L, LuaIndexes.LUA_GLOBALSINDEX, "dofile");
 
+			LuaDLL.lua_newtable(L);
+			LuaDLL.lua_setfield(L, LuaIndexes.LUA_REGISTRYINDEX, LuaStatic.ObjectCacheTable);
             // Insert our loader FIRST
             loaderFunction = new LuaCSFunction(LuaStatic.loader);
             LuaDLL.lua_pushstdcallcfunction(L, loaderFunction);
