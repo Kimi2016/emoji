@@ -7,7 +7,7 @@ function readIndex(t, index)
     if (istype(index, "string")) then
         if (istype(value, "table")) then     
             if (istype(value["get"], "function")) then               
-                value = value.get()
+                value = value.get(t)
             end
         elseif (not(istype(value, "function"))) then       
             value = nil
@@ -21,7 +21,7 @@ function writeIndex(t, index, value)
     local targetTable = getmetatable(t)
     if (istype(targetTable[index], "table")) then
         if (istype(targetTable[index]["set"], "function")) then
-            targetTable[index]["set"](value)
+            targetTable[index].set(t, value)
             return
         else
             assert(false,"attempt to write a private value!")

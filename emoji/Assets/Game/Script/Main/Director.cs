@@ -97,15 +97,15 @@ public class Director : MonoBehaviour {
 		mLuaState.DoString(text);
 
 		LuaRegister.Register(mLuaState.L);
-		LuaRegister.SetLuaClass(mLuaState);
+		//LuaRegister.SetLuaClass(mLuaState);
 		
 		mLuaState.DoString(@"
 			local directory = Director:GetInstance()
-			directory:OpenView(0)
-			print(directory.value)
+			--directory:OpenView(0)
+			--print(directory.value)
 			directory.value = 2
+			Director.GetInstance():OpenView(0)
 			print(directory.value)
-			mtDirector.GetInstance():OpenView(0)
 		");
 	}
 	void Update() { 

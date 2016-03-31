@@ -43,18 +43,12 @@ namespace LuaInterface {
 
 			LuaDLL.lua_newtable(L);
 			//functions
-			LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaDirector.OpenView));
-			LuaDLL.lua_setfield(L, -2, "OpenView");
-			LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaDirector.GetInstance));
-			LuaDLL.lua_setfield(L, -2, "GetInstance");
-			LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaDirector.Log));
-			LuaDLL.lua_setfield(L, -2, "Log");
+			LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.OpenView, "OpenView");
+			LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.GetInstance, "GetInstance");
+			LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.Log, "Log");
 
 			//property
-			LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaDirector.SetValue));
-			LuaDLL.lua_setfield(L, -2, "SetValue");
-			LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaDirector.GetValue));
-			LuaDLL.lua_setfield(L, -2, "GetValue");
+			LuaDLL.lua_pushcsharpproperty(L, "value", LuaDirector.GetValue, LuaDirector.SetValue);
 
 			//mata table method
 			LuaDLL.lua_getglobal(L, "readIndex");
@@ -72,7 +66,7 @@ namespace LuaInterface {
 
 			//set table
 			LuaDLL.lua_pushvalue(L, -1);
-			LuaDLL.lua_setglobal(L, "mtDirector");
+			LuaDLL.lua_setglobal(L, "Director");
 
 			LuaDLL.lua_settop(L, oldTop);
 		}
@@ -83,7 +77,7 @@ namespace LuaInterface {
 		[MonoPInvokeCallback(typeof(LuaCSFunction))]
 		public static int GetInstance(IntPtr L) {
 			int result = 1;
-			LuaStatic.addGameObject2Lua(L, Director.GetInstance(), "mtDirector");
+			LuaStatic.addGameObject2Lua(L, Director.GetInstance(), "Director");
 			return result;
 		}
 		[MonoPInvokeCallback(typeof(LuaCSFunction))]

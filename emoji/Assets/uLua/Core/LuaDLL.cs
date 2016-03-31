@@ -108,9 +108,9 @@ namespace LuaInterface
 			return LuaDLL.lua_typename(luaState, LuaDLL.lua_type(luaState, stackPos));
 		}
 
-		public static int lua_isfunction(IntPtr luaState, int stackPos)
+		public static bool lua_isfunction(IntPtr luaState, int stackPos)
 		{
-			return Convert.ToInt32(lua_type(luaState, stackPos) == LuaTypes.LUA_TFUNCTION);
+			return lua_type(luaState, stackPos) == LuaTypes.LUA_TFUNCTION;
 		}
 
 		public static int lua_islightuserdata(IntPtr luaState, int stackPos)
@@ -118,9 +118,9 @@ namespace LuaInterface
 			return Convert.ToInt32(lua_type(luaState, stackPos) == LuaTypes.LUA_TLIGHTUSERDATA);
 		}
 
-		public static int lua_istable(IntPtr luaState, int stackPos)
+		public static bool lua_istable(IntPtr luaState, int stackPos)
 		{
-			return Convert.ToInt32(lua_type(luaState, stackPos) == LuaTypes.LUA_TTABLE);
+			return lua_type(luaState, stackPos) == LuaTypes.LUA_TTABLE;
 		}
 
 		public static int lua_isthread(IntPtr luaState, int stackPos)
@@ -292,6 +292,21 @@ namespace LuaInterface
 		{
 			IntPtr fn = Marshal.GetFunctionPointerForDelegate(function);
 			lua_pushstdcallcfunction(luaState, fn);
+		}
+		public static void lua_pushstdcallcfunction(IntPtr luaState, LuaCSFunction function,string functionName) {
+			lua_pushstdcallcfunction(luaState, function);
+			lua_setfield(luaState, -2, functionName);
+		}
+		public static void lua_pushcsharpproperty(IntPtr luaState, string propertyName,LuaCSFunction get,LuaCSFunction set) {
+			LuaDLL.lua_newtable(luaState);
+			LuaDLL.lua_pushstdcallcfunction(luaState, get);
+			LuaDLL.lua_setfield(luaState, -2, "get");
+			LuaDLL.lua_pushvalue(luaState, -1);
+
+			LuaDLL.lua_pushstdcallcfunction(luaState, new LuaCSFunction(LuaDirector.SetValue));
+			LuaDLL.lua_setfield(luaState, -2, "set");
+			LuaDLL.lua_setfield(luaState, -3, propertyName);
+			LuaDLL.lua_pop(luaState, 1);
 		}
 
 		[DllImport(LUADLL,CallingConvention=CallingConvention.Cdecl)]
