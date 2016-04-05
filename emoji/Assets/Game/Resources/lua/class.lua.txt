@@ -121,7 +121,7 @@ function class(classname, super)
             cls.__create = super
         end
 
-        --cls.ctor = function() end
+        cls.ctor = function() end
         cls.__cname = classname
         cls.__ctype = 1
 
