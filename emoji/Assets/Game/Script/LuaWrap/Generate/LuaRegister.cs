@@ -27,23 +27,23 @@ __________#_______####_______####______________
 
                 我们的未来没有BUG              
 * ==============================================================================
-* Filename: DataManager
-* Created:  2016/3/24 16:44:26
+* Filename: LuaRegister
+* Created:  4/6/2016 10:55:34 PM
 * Author:   HaYaShi ToShiTaKa
-* Purpose:  客户端的所有逻辑结构
+* Purpose:  Lua导出类注册的地方,本类由插件自动生成
 * ==============================================================================
 */
-using System;
-using System.Collections.Generic;
+namespace LuaInterface {
+    using System;
+    using System.Collections.Generic;
+    using UnityEngine;
 
-public class DataManager {
-	private static DataManager mInstance;
-	public static DataManager GetInstance() {
-		if (mInstance == null) {
-			mInstance = new DataManager();
-		}
-		return mInstance;
-	}
-	public DataManager() {
-	}
+
+    public class LuaRegister {
+        public static void Register(IntPtr L) {
+            LuaDirector.Register(L);
+            LuaScheduler.Register(L);
+            LuaUIManager.Register(L);
+        }
+    }
 }

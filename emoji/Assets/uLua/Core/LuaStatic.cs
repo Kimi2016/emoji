@@ -44,6 +44,34 @@ namespace LuaInterface
 			LuaDLL.lua_error(luaState);
 			return null;
 		}
+        public static bool CheckType(IntPtr L, Type t, int pos) {
+            //默认都可以转 object
+            if (t == typeof(object)) {
+                return true;
+            }
+
+            LuaTypes luaType = LuaDLL.lua_type(L, pos);
+            switch (luaType) {
+                case LuaTypes.LUA_TNUMBER:
+                    return t.IsPrimitive || t.IsEnum;
+                case LuaTypes.LUA_TSTRING:
+                    return t == typeof(string) || t == typeof(byte[]) || t == typeof(char[]);
+                case LuaTypes.LUA_TUSERDATA:
+                    return t == typeof(object);
+                case LuaTypes.LUA_TBOOLEAN:
+                    return t == typeof(bool);
+                case LuaTypes.LUA_TFUNCTION:
+                    return t == typeof(LuaFunction);
+                case LuaTypes.LUA_TLIGHTUSERDATA:
+                    return t == typeof(IntPtr);
+                case LuaTypes.LUA_TNIL:
+                    return t == null || t.IsEnum || !t.IsValueType;
+                default:
+                    break;
+            }
+
+            throw new LuaException("undefined type to check" + LuaDLL.luaL_typename(L, pos));
+        }
 		public static int addGameObject2Lua(IntPtr L, object obj, string metatable) {
 			if (obj == null) {
 				LuaDLL.lua_pushnil(L); 

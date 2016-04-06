@@ -1,4 +1,4 @@
-local director = mtDirector.GetInstance()
+local director = Director.GetInstance()
 
 Director = class("Director",function()
     return director
