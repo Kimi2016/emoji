@@ -28,15 +28,15 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaRegister
-* Created:  4/6/2016 10:55:34 PM
+* Created:  4/7/2016 9:16:12 PM
 * Author:   HaYaShi ToShiTaKa
 * Purpose:  Lua导出类注册的地方,本类由插件自动生成
 * ==============================================================================
 */
 namespace LuaInterface {
-    using System;
     using System.Collections.Generic;
-    using UnityEngine;
+    using System;
+    using System.Collections;
 
 
     public class LuaRegister {
@@ -44,6 +44,8 @@ namespace LuaInterface {
             LuaDirector.Register(L);
             LuaScheduler.Register(L);
             LuaUIManager.Register(L);
+            LuaGameObject.Register(L);
+            LuaUIButton.Register(L);
         }
     }
 }

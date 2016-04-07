@@ -28,15 +28,15 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaDirector
-* Created:  4/6/2016 10:55:34 PM
+* Created:  4/7/2016 9:16:11 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  Director的lua导出类,本类由插件自动生成
 * ==============================================================================
 */
 namespace LuaInterface {
-    using System;
     using System.Collections.Generic;
-    using UnityEngine;
+    using System;
+    using System.Collections;
 
     public class LuaDirector {
 
@@ -44,7 +44,7 @@ namespace LuaInterface {
             int oldTop = LuaDLL.lua_gettop(L);
 
             LuaDLL.lua_newtable(L);
-            LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.GetInstance, "GetInstance");
+            LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.GetInstance, "GetInstance");
             LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.LogTest, "LogTest");
             LuaDLL.lua_pushcsharpproperty(L, "value", LuaDirector.get_value, LuaDirector.set_value);
             LuaDLL.lua_pushcsharpproperty(L, "luaState", LuaDirector.get_luaState, null);
@@ -69,8 +69,8 @@ namespace LuaInterface {
             LuaDLL.lua_setglobal(L, "Director");
 
             LuaDLL.lua_settop(L, oldTop);
-                    }
-
+        }
+
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static int GetInstance(IntPtr L) {
             int result = 1;
@@ -91,7 +91,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-                System.String arg1 = (System.String)LuaStatic.GetObj(L, 2);
+            String arg1 = (String)LuaStatic.GetObj(L, 2);
             obj.LogTest(arg1);
             return result;
         }
@@ -107,7 +107,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaDLL.lua_pushnumber(L, obj.value);
+            LuaStatic.addGameObject2Lua(L, obj.value, "Director");
             return result;
         }
 
@@ -116,14 +116,14 @@ namespace LuaInterface {
             int result = 1;
             int count = LuaDLL.lua_gettop(L);
 
-            if (count != 1) {
+            if (count != 2) {
                 LuaStatic.traceback(L, "count not enough");
                 LuaDLL.lua_error(L);
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
             
-            obj.value = (Int32)LuaStatic.GetObj(L, 2);;
+            obj.value = (Int32)LuaStatic.GetObj(L, 2);
             return result;
         }
 
@@ -138,7 +138,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.luaState, "LuaState");
+            LuaStatic.addGameObject2Lua(L, obj.luaState, "Director");
             return result;
         }
 
@@ -153,7 +153,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.scheduler, "Scheduler");
+            LuaStatic.addGameObject2Lua(L, obj.scheduler, "Director");
             return result;
         }
 
@@ -168,7 +168,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.uiManager, "UIManager");
+            LuaStatic.addGameObject2Lua(L, obj.uiManager, "Director");
             return result;
         }
 
@@ -183,7 +183,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.eventDispatcher, "EventDispatcher");
+            LuaStatic.addGameObject2Lua(L, obj.eventDispatcher, "Director");
             return result;
         }
     }

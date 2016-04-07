@@ -28,15 +28,15 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaUIManager
-* Created:  4/6/2016 10:55:34 PM
+* Created:  4/7/2016 9:16:11 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  UIManager的lua导出类,本类由插件自动生成
 * ==============================================================================
 */
 namespace LuaInterface {
-    using System;
     using System.Collections.Generic;
-    using UnityEngine;
+    using System;
+    using System.Collections;
 
     public class LuaUIManager {
 
@@ -44,7 +44,7 @@ namespace LuaInterface {
             int oldTop = LuaDLL.lua_gettop(L);
 
             LuaDLL.lua_newtable(L);
-            LuaDLL.lua_pushstdcallcfunction(L, LuaUIManager.MakeInstance, "MakeInstance");
+            LuaDLL.lua_pushstdcallcfunction(L, LuaUIManager.MakeInstance, "MakeInstance");
             LuaDLL.lua_pushstdcallcfunction(L, LuaUIManager.OpenView, "OpenView");
             LuaDLL.lua_pushstdcallcfunction(L, LuaUIManager.CloseView, "CloseView");
 
@@ -65,8 +65,8 @@ namespace LuaInterface {
             LuaDLL.lua_setglobal(L, "UIManager");
 
             LuaDLL.lua_settop(L, oldTop);
-                    }
-
+        }
+
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
         public static int MakeInstance(IntPtr L) {
             int result = 1;
@@ -81,32 +81,39 @@ namespace LuaInterface {
             int result = 1;
             int count = LuaDLL.lua_gettop(L);
 
-            if (count == 2&& LuaStatic.CheckType(L, typeof(EnumUIName), 2)) {
-                    UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
-                    EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
-                    obj.OpenView(arg1);
+            if (count == 2 &&
+                LuaStatic.CheckType(L, typeof(EnumUIName), 2)) {
+                UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
+                EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+                obj.OpenView(arg1);
 
-                    return result;
-                }
-            if (count == 3&& LuaStatic.CheckType(L, typeof(EnumUIName), 2)&& LuaStatic.CheckType(L, typeof(System.Object), 3)) {
-                    UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
-                    EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
-                    System.Object arg2 = (System.Object)LuaStatic.GetObj(L, 3);
-                    obj.OpenView(arg1,arg2);
+                return result;
+            }
+            if (count == 3 &&
+                LuaStatic.CheckType(L, typeof(EnumUIName), 2) &&
+                LuaStatic.CheckType(L, typeof(Object), 3)) {
+                UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
+                EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+                Object arg2 = (Object)LuaStatic.GetObj(L, 3);
+                obj.OpenView(arg1, arg2);
 
-                    return result;
-                }
-            if (count == 4&& LuaStatic.CheckType(L, typeof(EnumUIName), 2)&& LuaStatic.CheckType(L, typeof(System.Object), 3)&& LuaStatic.CheckType(L, typeof(System.Boolean), 4)) {
-                    UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
-                    EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
-                    System.Object arg2 = (System.Object)LuaStatic.GetObj(L, 3);
-                    System.Boolean arg3 = (System.Boolean)LuaStatic.GetObj(L, 4);
-                    obj.OpenView(arg1,arg2,arg3);
+                return result;
+            }
+            if (count == 4 &&
+                LuaStatic.CheckType(L, typeof(EnumUIName), 2) &&
+                LuaStatic.CheckType(L, typeof(Object), 3) &&
+                LuaStatic.CheckType(L, typeof(Boolean), 4)) {
+                UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
+                EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+                Object arg2 = (Object)LuaStatic.GetObj(L, 3);
+                Boolean arg3 = (Boolean)LuaStatic.GetObj(L, 4);
+                obj.OpenView(arg1, arg2, arg3);
 
-                    return result;
-                }
+                return result;
+            }
             LuaStatic.traceback(L, "count not enough");
-            LuaDLL.lua_error(L);                            return result;
+            LuaDLL.lua_error(L);
+            return result;
         }
 
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -114,23 +121,27 @@ namespace LuaInterface {
             int result = 1;
             int count = LuaDLL.lua_gettop(L);
 
-            if (count == 2&& LuaStatic.CheckType(L, typeof(EnumUIName), 2)) {
-                    UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
-                    EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
-                    obj.CloseView(arg1);
+            if (count == 2 &&
+                LuaStatic.CheckType(L, typeof(EnumUIName), 2)) {
+                UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
+                EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+                obj.CloseView(arg1);
 
-                    return result;
-                }
-            if (count == 3&& LuaStatic.CheckType(L, typeof(EnumUIName), 2)&& LuaStatic.CheckType(L, typeof(System.Boolean), 3)) {
-                    UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
-                    EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
-                    System.Boolean arg2 = (System.Boolean)LuaStatic.GetObj(L, 3);
-                    obj.CloseView(arg1,arg2);
+                return result;
+            }
+            if (count == 3 &&
+                LuaStatic.CheckType(L, typeof(EnumUIName), 2) &&
+                LuaStatic.CheckType(L, typeof(Boolean), 3)) {
+                UIManager obj = LuaStatic.GetObj(L, 1) as UIManager;
+                EnumUIName arg1 = (EnumUIName)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+                Boolean arg2 = (Boolean)LuaStatic.GetObj(L, 3);
+                obj.CloseView(arg1, arg2);
 
-                    return result;
-                }
+                return result;
+            }
             LuaStatic.traceback(L, "count not enough");
-            LuaDLL.lua_error(L);                            return result;
+            LuaDLL.lua_error(L);
+            return result;
         }
     }
 

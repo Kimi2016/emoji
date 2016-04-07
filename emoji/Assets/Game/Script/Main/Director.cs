@@ -96,7 +96,7 @@ public class Director : MonoBehaviour {
 		string text = Resources.Load<TextAsset>("lua/class.lua").text;
 		mLuaState.DoString(text);
 
-		LuaRegister.Register(mLuaState.L);
+		//LuaRegister.Register(mLuaState.L);
 		
 		mLuaState.DoString(@"
             print(Director.GetInstance)

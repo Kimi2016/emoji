@@ -21,7 +21,7 @@
     ######        #####     #####     ####     
      #####        ####      #####     ###      
       #####       ###        ###      #        
-        ###       ###        ###              
+        ###       ###        ###              )
          ##       ###        ###               
 __________#_______####_______####______________
 
@@ -46,18 +46,21 @@ static public class LuaApiMaker {
     public static string saveDir = Application.dataPath + "/Game/Script/LuaWrap/Generate/";
     static BindingFlags binding = BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase;
     static List<Type> typeList = new List<Type> { 
-            typeof(Director),typeof(Scheduler),typeof(UIManager)
+            typeof(Director),
+            typeof(Scheduler),
+            typeof(UIManager),
+            typeof(GameObject),
+            typeof(UIButton),
         };
     static List<string> usingList = new List<string> {
-			"System","System.Collections.Generic",
-			"UnityEngine"
+			"System.Collections.Generic","System","System.Collections",
 		};
-
     static Dictionary<string, int> nameCounter = new Dictionary<string, int>();
     static List<MethodInfo> methods = new List<MethodInfo>();
     static List<PropertyInfo> propertys = new List<PropertyInfo>();
+    static List<FieldInfo> fields = new List<FieldInfo>();
     static string argsText;
-
+    
     [MenuItem("tools/import lua api")]
     public static void ImportLuaApi() {
         List<Type> classList = new List<Type>();
@@ -244,6 +247,7 @@ static public class LuaApiMaker {
             StringBuilder sb = new StringBuilder();
             methods.Clear();
             propertys.Clear();
+            fields.Clear();
             nameCounter.Clear();
 
             methods.AddRange(type.GetMethods(BindingFlags.DeclaredOnly |
@@ -254,14 +258,19 @@ static public class LuaApiMaker {
             BindingFlags.Static |
             BindingFlags.Instance | BindingFlags.Public));
 
+            fields.AddRange(type.GetFields(BindingFlags.DeclaredOnly |
+            BindingFlags.Static |
+            BindingFlags.Instance | BindingFlags.Public));
+
             for (int i = methods.Count - 1; i >= 0; --i) {
                 //去掉操作符函数
                 if (methods[i].Name.Contains("op_") || methods[i].Name.Contains("add_") || methods[i].Name.Contains("remove_")
-                    || methods[i].Name.Contains("set_") || methods[i].Name.Contains("get_")
+                    || methods[i].Name.Contains("set_") || methods[i].Name.Contains("get_") || methods[i].IsGenericMethod
                     ) {
                     methods.RemoveAt(i);
                     continue;
                 }
+                
                 //扔掉 unity3d 废弃的函数                
                 if (IsObsolete(methods[i])) {
                     methods.RemoveAt(i);
@@ -270,7 +279,13 @@ static public class LuaApiMaker {
             for (int i = propertys.Count - 1; i >= 0; --i) {
                 //扔掉 unity3d 废弃的函数                
                 if (IsObsolete(propertys[i])) {
-                    methods.RemoveAt(i);
+                    propertys.RemoveAt(i);
+                }
+            }
+            for (int i = fields.Count - 1; i >= 0; --i) {
+                //扔掉 unity3d 废弃的函数                
+                if (IsObsolete(fields[i])) {
+                    fields.RemoveAt(i);
                 }
             }
             sb.AppendFormat("    public class Lua{0}", name);
@@ -281,6 +296,7 @@ static public class LuaApiMaker {
             nameCounter.Clear();
             GenFunctions(sb);
             GenPropertys(sb);
+            GenFields(sb);
 
             sb.Append("    }\r\n");
             SaveFile(saveDir + "Lua" + name + ".cs", sb, name);
@@ -302,6 +318,10 @@ static public class LuaApiMaker {
         for (int i = 0; i < propertys.Count; i++) {
             RegisterProperty(propertys[i], sb);
         }
+        for (int i = 0; i < fields.Count; i++) {
+            RegisterField(fields[i], sb);
+        }
+
         AppendRegisterEnd(sb, className);
     }
     static void GenFunctions(StringBuilder sb) {
@@ -330,8 +350,42 @@ static public class LuaApiMaker {
             GenProperty(p, sb);
         }
     }
+    static void GenFields(StringBuilder sb) {
+        for (int i = 0; i < fields.Count; i++) {
+            FieldInfo f = fields[i];
+            GenField(f, sb);
+        }
+    }
     #endregion
+    static string TrimNameSpace(Type fieldType) {
+        string fullName = string.Empty;
+        string tempName = string.Empty;
+        Type[] types = fieldType.GetGenericArguments();
+        if (types.Length <= 0) {
+            fullName = fieldType.FullName;
+            for (int i = 0; i < usingList.Count; i++) {
+                tempName = fullName.Replace(usingList[i] + ".", "");
+                if (!tempName.Contains(".")) {
+                    fullName = tempName;
+                }
+            }
+        }
+        else {
+            fullName = fieldType.Namespace + "." + fieldType.Name.Substring(0, fieldType.Name.Length - 2) + "<";
+            for (int i = 0; i < usingList.Count; i++) {
+                fullName = fullName.Replace(usingList[i] + ".", "");
+            }
+            for (int i = 0; i < types.Length; i++) {
+                if (i == types.Length - 1) {
+                    fullName += TrimNameSpace(types[i]) + ">";
+                    break;
+                }
+                fullName += TrimNameSpace(types[i]) + " ,";
 
+            }
+        }
+        return fullName.Replace("+",".");
+    }
     static void SaveFile(string file, StringBuilder sb, string name) {
         var utf8WithoutBom = new System.Text.UTF8Encoding(false);
         using (StreamWriter textWriter = new StreamWriter(file, false, utf8WithoutBom)) {
@@ -455,24 +509,24 @@ __________#_______####_______####______________
         //先注册get方法
         MethodInfo m = p.GetGetMethod();
         AppendFunctionHead(m, sb);
-        bool isReturn = true;
         string text = m.ReflectedType.Name + "." + m.Name + "(";
         int count = m.IsStatic ? 0 : 1;
+        if (m.IsStatic) {
+            text = TrimNameSpace(p.ReflectedType) + ".";
+        }
+        else {
+            text = "obj.";
+        }
         if (count > 0) {
-            text = "obj." + p.Name;
+            text += p.Name;
             CheckArgsCount(m, count, sb, true);
         }
 
         text += ";\r\n";
         sb.Append("\r\n            ");
 
-        if (isReturn) {
-            text = text.Remove(text.Length - 3, 3);
-            GenPushStr(m.ReturnType, text, sb);
-        }
-        else {
-            sb.Append(text);
-        }
+        text = text.Remove(text.Length - 3, 3);
+        GenPushStr(m.ReflectedType, text, sb);
         AppendFunctionEnd(sb);
 
         //注册set方法
@@ -480,24 +534,75 @@ __________#_______####_______####______________
         if (m == null) return;
         AppendFunctionHead(m, sb);
         ParameterInfo[] paramInfos = m.GetParameters();
-        isReturn = false;
-        text = m.ReflectedType.Name + "." + m.Name + "(";
-        count = m.IsStatic ? 0 : 1;
+        text = m.ReflectedType.Name + ".";
+        count = m.IsStatic ? 1 : 2;
+        if (m.IsStatic) {
+            text = "\r\n            " + TrimNameSpace(m.ReturnType) + ".";
+        }
+        else {
+            text = "\r\n            " + "obj.";
+        }
         if (count > 0) {
-            CheckArgsCount(m, count, sb, true);
-            text = string.Format("\r\n            obj.{0} = ({1})LuaStatic.GetObj(L, {2});", p.Name, paramInfos[0].ParameterType.Name, 2);
+            if (!m.IsStatic) {
+                CheckArgsCount(m, count, sb, true);
+                text += string.Format("{0} = ({1})LuaStatic.GetObj(L, {2});\r\n", p.Name, TrimNameSpace(paramInfos[0].ParameterType), 2);
+            }
+            else {
+                text += string.Format("{0} = ({1})LuaStatic.GetObj(L, {2});\r\n", p.Name, TrimNameSpace(paramInfos[0].ParameterType), 1);
+            }
         }
 
+        sb.Append("\r\n            ");
+        sb.Append(text);
+
+        AppendFunctionEnd(sb);
+    }
+    static void GenField(FieldInfo p, StringBuilder sb) {
+
+        //先注册get方法
+        AppendFunctionHead("get_" + p.Name, sb);
+        string text = string.Empty;
+        int count = p.IsStatic ? 0 : 1;
+        if (p.IsStatic) {
+            text = p.ReflectedType.Name + "." + p.Name;
+        }
+        else {
+            text = "obj.";
+        }
+        if (count > 0) {
+            text += p.Name;
+            CheckArgsCount(TrimNameSpace(p.ReflectedType), count, sb, true);
+        }
         text += ";\r\n";
         sb.Append("\r\n            ");
 
-        if (isReturn) {
-            text = text.Remove(text.Length - 3, 3);
-            GenPushStr(m.ReturnType, text, sb);
+        text = text.Remove(text.Length - 3, 3);
+        GenPushStr(p.ReflectedType, text, sb);
+        AppendFunctionEnd(sb);
+
+        //注册set方法
+        AppendFunctionHead("set_" + p.Name, sb);
+        text = TrimNameSpace(p.ReflectedType) + "." + p.Name;
+        count = p.IsStatic ? 1 : 2;
+        if (p.IsStatic) {
+            text = TrimNameSpace(p.ReflectedType) + ".";
         }
         else {
-            sb.Append(text);
+            text = "\r\n            " + "obj.";
         }
+        if (count > 0) {
+            if (!p.IsStatic) {
+                CheckArgsCount(TrimNameSpace(p.ReflectedType), count, sb, true);
+                text += string.Format("{0} = ({1})LuaStatic.GetObj(L, {2});\r\n", p.Name, TrimNameSpace(p.FieldType), 2);
+            }
+            else {
+                text += string.Format("{0} = ({1})LuaStatic.GetObj(L, {2});\r\n", p.Name, TrimNameSpace(p.FieldType), 1);
+            }
+
+        }
+
+        sb.Append("\r\n            ");
+        sb.Append(text);
 
         AppendFunctionEnd(sb);
     }
@@ -525,9 +630,36 @@ __________#_______####_______####______________
         else if (t.IsPrimitive && !t.IsEnum) {
             sb.AppendFormat("LuaDLL.lua_pushnumber(L, {0});\r\n", arg);
         }
+        else if (t.IsArray) {
+            sb.AppendFormat("{0}[] objs = {1};\r\n", GetArrayItem(t, true), arg);
+            sb.Append("                LuaDLL.lua_newtable(L);\r\n");
+            sb.Append("                int num2 = 0;\r\n");
+            sb.Append("                foreach (var item in objs) {\r\n");
+            sb.AppendFormat("                    LuaStatic.addGameObject2Lua(L, item, '{0}');\r\n", GetArrayItem(t, false));
+            sb.Append("                    LuaDLL.lua_pushnumber(L, (double)(++num2));\r\n");
+            sb.Append("                    LuaDLL.lua_insert(L, -2);\r\n");
+            sb.Append("                    LuaDLL.lua_settable(L, -3);\r\n");
+            sb.Append("                }\r\n");
+        }
         else {
             sb.AppendFormat("LuaStatic.addGameObject2Lua(L, {0}, '{1}');\r\n", arg, t.Name);
         }
+    }
+    static string GetArrayItem(Type arryType,bool isFull) {
+        string result = string.Empty;
+        Type[] types = arryType.GetGenericArguments();
+        if (types.Length > 0) {
+            arryType = types[types.Length - 1];
+        }
+        if (isFull) {
+            result = arryType.FullName;
+        }
+        else {
+            result = arryType.Name;
+        }
+        result = result.Replace("[]", "");
+        result = result.Replace("+", ".");
+        return result;
     }
     static void RegisterFunction(MethodInfo m, StringBuilder sb) {
         int count = 0;
@@ -547,10 +679,18 @@ __________#_______####_______####______________
         string setMethod = p.GetSetMethod() == null ? "null" : "Lua" + p.ReflectedType.Name + "." + p.GetSetMethod().Name;
         sb.AppendFormat("            LuaDLL.lua_pushcsharpproperty(L, '{0}', {1}, {2});\r\n", p.Name, getMethod, setMethod);
     }
+    static void RegisterField(FieldInfo f, StringBuilder sb) {
+        string getMethod = "Lua" + f.ReflectedType.Name + ".get_" + f.Name;
+        string setMethod = "Lua" + f.ReflectedType.Name + ".set_" + f.Name;
+        sb.AppendFormat("            LuaDLL.lua_pushcsharpproperty(L, '{0}', {1}, {2});\r\n", f.Name, getMethod, setMethod);
+    }
     #region append
     static void AppendFunctionHead(MemberInfo mb, StringBuilder sb) {
+        AppendFunctionHead(mb.Name, sb);
+    }
+    static void AppendFunctionHead(string name, StringBuilder sb) {
         sb.Append("\r\n        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]\r\n");
-        sb.AppendFormat("        public static int {0}(IntPtr L)", mb.Name);
+        sb.AppendFormat("        public static int {0}(IntPtr L)", name);
         sb.Append(" {\r\n            int result = 1;\r\n");
     }
     static void AppendFunctionEnd(StringBuilder sb) {
@@ -559,10 +699,13 @@ __________#_______####_______####______________
         sb.Append("        }\r\n");
     }
     static void CheckArgsCount(MemberInfo info, int count, StringBuilder sb,bool isProperty) {
+        CheckArgsCount(TrimNameSpace(info.ReflectedType), count, sb, isProperty);
+    }
+    static void CheckArgsCount(string classType, int count, StringBuilder sb,bool isProperty) {
         sb.Append("            int count = LuaDLL.lua_gettop(L);\r\n");
         sb.AppendFormat(@"
             if (count != {0}){2}
-            {1} obj = LuaStatic.GetObj(L, 1) as {1};", count, info.ReflectedType.Name, @" {
+            {1} obj = LuaStatic.GetObj(L, 1) as {1};", count, classType, @" {
                 LuaStatic.traceback(L, 'count not enough');
                 LuaDLL.lua_error(L);
                 return result;
@@ -586,34 +729,26 @@ __________#_______####_______####______________
             if (!info.IsStatic) {
                 sb.AppendFormat(@"
             if (count != {0}){2}
-            {1} obj = LuaStatic.GetObj(L, 1) as {1};", count, info.ReflectedType.Name, @" {
+            {1} obj = LuaStatic.GetObj(L, 1) as {1};", count, TrimNameSpace(info.ReflectedType), @" {
                 LuaStatic.traceback(L, 'count not enough');
                 LuaDLL.lua_error(L);
                 return result;
             }");
                 argsText = "obj." + info.Name + "(";
-                for (int i = 0; i < paramInfos.Length; i++) {
-                    sb.Append("\r\n                ");
-                    AppendArgs(sb, paramInfos, i);
-                    if (i != 0) {
-                        argsText += ",";
-                    }
-                    argsText += string.Format("arg{0}", i + 1);
-                }
-                sb.Append("\r\n            ");
-                argsText += ");\r\n";
             }
             else {
-                sb.Append("\r\n            ");
-                argsText = info.ReflectedType.Name + "." + info.Name + "(";
-                for (int i = 0; i < paramInfos.Length; i++) {
-                    if (i != 0) {
-                        argsText += ",";
-                    }
-                    argsText += string.Format("arg{0}", i + 1);
-                }
-                argsText += ");\r\n";
+                argsText = TrimNameSpace(info.ReflectedType) + "." + info.Name + "(";
             }
+            for (int i = 0; i < paramInfos.Length; i++) {
+                sb.Append("\r\n            ");
+                AppendArgs(sb, paramInfos, i);
+                if (i != 0) {
+                    argsText += ",";
+                }
+                argsText += string.Format("arg{0}", i + 1);
+            }
+            sb.Append("\r\n            ");
+            argsText += ");\r\n";
             if (isReturn) {
                 argsText = argsText.Remove(argsText.Length - 3, 3);
                 GenPushStr(info.ReturnType, argsText, sb);
@@ -630,24 +765,27 @@ __________#_______####_______####______________
                 count = methodList[i].IsStatic ? paramInfos.Length : paramInfos.Length + 1;
                 string condition = "count == " + count;
                 for (int j = 0; j < paramInfos.Length; j++) {
-                    condition += "&& LuaStatic.CheckType(L, typeof(" + paramInfos[j].ParameterType.FullName + "), " + (j + 2).ToString() + ")";
+                    condition += " &&\r\n                LuaStatic.CheckType(L, typeof(" + TrimNameSpace(paramInfos[j].ParameterType) + "), " + (j + 2).ToString() + ")";
                 }
                 sb.AppendFormat("\r\n            if ({0})", condition);
                 sb.Append(" {");
-                sb.AppendFormat("\r\n                    {0} obj = LuaStatic.GetObj(L, 1) as {0};", info.ReflectedType.Name);
-
-                argsText = "obj." + info.Name + "(";
+                if (!info.IsStatic) {
+                    sb.AppendFormat("\r\n                {0} obj = LuaStatic.GetObj(L, 1) as {0};", TrimNameSpace(info.ReflectedType));
+                    argsText = "obj." + info.Name + "(";
+                }
+                else {
+                    argsText = TrimNameSpace(info.ReflectedType) + "." + info.Name + "(";
+                }
                 for (int j = 0; j < paramInfos.Length; j++) {
-                    sb.Append("\r\n                    ");
+                    sb.Append("\r\n                ");
                     AppendArgs(sb, paramInfos, j);
                     if (j != 0) {
-                        argsText += ",";
+                        argsText += ", ";
                     }
                     argsText += string.Format("arg{0}", j + 1);
                 }
-
                 argsText += ");\r\n";
-                sb.Append("\r\n                    ");
+                sb.Append("\r\n                ");
                 if (isReturn) {
                     argsText = argsText.Remove(argsText.Length - 3, 3);
                     GenPushStr(info.ReturnType, argsText, sb);
@@ -655,13 +793,12 @@ __________#_______####_______####______________
                 else {
                     sb.Append(argsText);
                 }
-
-                sb.Append("\r\n                    return result;");
-                sb.Append("\r\n                }");
+                sb.Append("\r\n                return result;");
+                sb.Append("\r\n            }");
 
                 if (i == methodList.Count - 1) { 
                     sb.Append("\r\n            LuaStatic.traceback(L, 'count not enough');");
-                    sb.Append("\r\n            LuaDLL.lua_error(L);                ");
+                    sb.Append("\r\n            LuaDLL.lua_error(L);\r\n");
                 }
 
 
@@ -671,10 +808,10 @@ __________#_______####_______####______________
     static void AppendArgs(StringBuilder sb, ParameterInfo[] paramInfos, int index) {
         Type paramType = paramInfos[index].ParameterType;
         if (paramType.IsPrimitive && paramType != typeof(bool) || paramType.IsEnum) {
-            sb.AppendFormat("{0} arg{1} = ({0})Convert.ToInt32(LuaStatic.GetObj(L, {2}));", paramInfos[index].ParameterType.FullName, index + 1, index + 2);
+            sb.AppendFormat("{0} arg{1} = ({0})Convert.ToInt32(LuaStatic.GetObj(L, {2}));", TrimNameSpace(paramInfos[index].ParameterType), index + 1, index + 2);
         }
         else {
-            sb.AppendFormat("{0} arg{1} = ({0})LuaStatic.GetObj(L, {2});", paramInfos[index].ParameterType.FullName, index + 1, index + 2);
+            sb.AppendFormat("{0} arg{1} = ({0})LuaStatic.GetObj(L, {2});", TrimNameSpace(paramInfos[index].ParameterType), index + 1, index + 2);
         }
         
     }
@@ -685,7 +822,7 @@ __________#_______####_______####______________
 
             LuaDLL.lua_newtable(L);");
 
-        sb.Append("\n\r");
+        sb.Append("\r\n");
     }
     static void AppendRegisterEnd(StringBuilder sb, string className) {
         sb.AppendFormat(@"
@@ -705,10 +842,9 @@ __________#_______####_______####______________
             LuaDLL.lua_pushvalue(L, -1);
             LuaDLL.lua_setglobal(L, '{0}');
 
-            LuaDLL.lua_settop(L, oldTop);
-            ", className);
+            LuaDLL.lua_settop(L, oldTop);", className);
 
-        sb.Append("        }\n\r");
+        sb.Append("\r\n        }\r\n");
     }
     #endregion
 }
