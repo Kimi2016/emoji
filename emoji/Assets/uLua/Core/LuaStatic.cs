@@ -15,8 +15,27 @@ namespace LuaInterface
 	{
 		public static readonly Dictionary<long, object> objs = new Dictionary<long, object>();
 		public static readonly Dictionary<object, int> objBack = new Dictionary<object, int>();
+        public static readonly Dictionary<string, Type> ExportTypeDict = new Dictionary<string, Type>();
 		public static int objsRefId = 0;
 		public const string ObjectCacheTable = "objectCache";
+        public static void AddTypeDict(Type type) {
+            if (ExportTypeDict.ContainsKey(type.Name)) {
+                return;
+            }
+            ExportTypeDict[type.Name] = type;
+        }
+        public static Type GetType(object typeData) {
+            Type result;
+            string typeName = typeData.ToString();
+            if (ExportTypeDict.ContainsKey(typeName)) {
+                result = ExportTypeDict[typeName];
+            }
+            else {
+                result = Type.GetType(typeName);
+                AddTypeDict(result);
+            }
+            return result;
+        }
 		public static object GetObj(IntPtr luaState, int index) {
 			switch (LuaDLL.lua_type(luaState, index)) {
 				case LuaTypes.LUA_TNIL:
@@ -199,7 +218,7 @@ namespace LuaInterface
 				return 0;
 			}
 			
-			LuaDLL.luaL_loadbuffer(L, file.text, Encoding.UTF8.GetByteCount(file.text), fileName);
+			LuaDLL.luaL_loadbuffer(L, file.bytes, Encoding.UTF8.GetByteCount(file.text), fileName);
 			
 			return 1;
 		}
@@ -222,7 +241,7 @@ namespace LuaInterface
 				return LuaDLL.lua_gettop(L) - n;
 			}
 			
-			if( LuaDLL.luaL_loadbuffer(L, file.text, Encoding.UTF8.GetByteCount(file.text), fileName) == 0 )
+			if( LuaDLL.luaL_loadbuffer(L, file.bytes, Encoding.UTF8.GetByteCount(file.text), fileName) == 0 )
 			{
 				LuaDLL.lua_call(L, 0, LuaDLL.LUA_MULTRET);
 			}

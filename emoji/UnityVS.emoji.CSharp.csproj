@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.0.2f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -68,9 +70,11 @@
     <Compile Include="Assets\Game\Script\GameConst\GameConst.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaDirector.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaGameObject.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaMonoBehaviour.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaRegister.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaScheduler.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaUIButton.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaUILabel.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaUIManager.cs" />
     <Compile Include="Assets\Game\Script\Main\Director.cs" />
     <Compile Include="Assets\Game\Script\Main\Scheduler.cs" />
@@ -284,8 +288,11 @@
     <Compile Include="Assets\uLua\Examples\06_LuaCoroutines\LuaCoroutines.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Game\Resources\lua\Director.lua.txt" />
     <None Include="Assets\Game\Resources\lua\class.lua.txt" />
+    <None Include="Assets\Game\Resources\lua\main.lua.txt" />
+    <None Include="Assets\Game\Resources\luaex\Director.lua.txt" />
+    <None Include="Assets\Game\Resources\luaex\class.lua.txt" />
+    <None Include="Assets\Game\Resources\luaex\main.lua.txt" />
     <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
     <None Include="Assets\NGUI\Examples\Atlases\Refractive\Refractive Font - Header.txt" />
     <None Include="Assets\NGUI\Examples\Atlases\Refractive\Refractive Font - Normal.txt" />

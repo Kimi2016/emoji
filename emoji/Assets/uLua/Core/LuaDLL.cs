@@ -277,9 +277,7 @@ namespace LuaInterface {
                 LuaDLL.lua_setfield(luaState, -2, "set");
             }
 
-            LuaDLL.lua_pushvalue(luaState, -1);
-            LuaDLL.lua_setfield(luaState, -3, propertyName);
-            LuaDLL.lua_pop(luaState, 1);
+            LuaDLL.lua_setfield(luaState, -2, propertyName);
         }
 
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
@@ -333,7 +331,7 @@ namespace LuaInterface {
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_load(IntPtr luaState, LuaChunkReader chunkReader, ref ReaderInfo data, string chunkName);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luaL_loadbuffer(IntPtr luaState, string buff, int size, string name);
+        public static extern int luaL_loadbuffer(IntPtr luaState, byte[] buff, int size, string name);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int luaL_loadfile(IntPtr luaState, string filename);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]

@@ -159,7 +159,8 @@ namespace LuaInterface
         {
             int oldTop = LuaDLL.lua_gettop(L);
 
-            if (LuaDLL.luaL_loadbuffer(L, chunk, Encoding.UTF8.GetByteCount(chunk), name) != 0)
+            byte[] data = Encoding.UTF8.GetBytes(chunk);
+            if (LuaDLL.luaL_loadbuffer(L, data, data.Length, name) != 0)
                 ThrowExceptionFromError(oldTop);
 
             if (env != null)
@@ -195,7 +196,7 @@ namespace LuaInterface
                 ThrowExceptionFromError(oldTop);
             }
 
-            if( LuaDLL.luaL_loadbuffer(L, file.text, Encoding.UTF8.GetByteCount(file.text), fileName) != 0 )
+            if( LuaDLL.luaL_loadbuffer(L, file.bytes, Encoding.UTF8.GetByteCount(file.text), fileName) != 0 )
             {
                 ThrowExceptionFromError(oldTop);
             }
@@ -225,7 +226,8 @@ namespace LuaInterface
         public object[] DoString(string chunk, string chunkName, LuaTable env)
         {
             int oldTop = LuaDLL.lua_gettop(L);
-            if (LuaDLL.luaL_loadbuffer(L, chunk, Encoding.UTF8.GetByteCount(chunk), chunkName) == 0)
+            byte[] data = Encoding.UTF8.GetBytes(chunk);
+            if (LuaDLL.luaL_loadbuffer(L, data, data.Length, chunkName) == 0)
             {
                 if (env != null)
                 {
@@ -266,7 +268,7 @@ namespace LuaInterface
                 ThrowExceptionFromError(oldTop);
             }
 
-            if( LuaDLL.luaL_loadbuffer(L, file.text, Encoding.UTF8.GetByteCount(file.text), fileName) == 0 )
+            if (LuaDLL.luaL_loadbuffer(L, file.bytes, file.bytes.Length, fileName) == 0)
             {
                 if (env != null)
                 {
