@@ -93,22 +93,9 @@ public class Director : MonoBehaviour {
 		mLuaState = new LuaState();
 	}
 	void Start() {
-		string text = Resources.Load<TextAsset>("lua/class.lua").text;
-		mLuaState.DoString(text);
-
-		//LuaRegister.Register(mLuaState.L);
-		
-		mLuaState.DoString(@"
-            print(Director.GetInstance)
-            print(Director.LogTest)
-
-			local directory = Director:GetInstance()
-			print(directory.value)
-			--directory.value = 2
-			local ma = Director.GetInstance().uiManager
-            ma:OpenView(0)
-			directory:LogTest('Hellow World')
-		");
+        mLuaState.DoFile("lua/class.lua");
+        LuaRegister.Register(mLuaState.L);
+        mLuaState.DoFile("lua/main.lua");
 	}
 	void Update() { 
 		

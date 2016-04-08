@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaDirector
-* Created:  4/7/2016 9:16:11 PM
+* Created:  4/8/2016 9:47:15 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  Director的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -39,11 +39,17 @@ namespace LuaInterface {
     using System.Collections;
 
     public class LuaDirector {
-
         public static void Register(IntPtr L) {
             int oldTop = LuaDLL.lua_gettop(L);
+            LuaDLL.lua_getglobal(L, "Director");
 
-            LuaDLL.lua_newtable(L);
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "Director");
+                LuaDLL.lua_getglobal(L, "Director");
+            }
+
             LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.GetInstance, "GetInstance");
             LuaDLL.lua_pushstdcallcfunction(L, LuaDirector.LogTest, "LogTest");
             LuaDLL.lua_pushcsharpproperty(L, "value", LuaDirector.get_value, LuaDirector.set_value);
@@ -64,11 +70,20 @@ namespace LuaInterface {
 
             LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaStatic.GameObjectGC));
             LuaDLL.lua_setfield(L, -2, "__gc");
-
-            LuaDLL.lua_pushvalue(L, -1);
-            LuaDLL.lua_setglobal(L, "Director");
+            LuaDLL.lua_getglobal(L, "MonoBehaviour");
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "MonoBehaviour");
+                LuaDLL.lua_getglobal(L, "MonoBehaviour");
+                LuaDLL.lua_setmetatable(L, -2);
+            }
+            else {
+                LuaDLL.lua_setmetatable(L, -2);
+            }
 
             LuaDLL.lua_settop(L, oldTop);
+
         }
 
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -107,7 +122,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.value, "Director");
+            LuaDLL.lua_pushnumber(L, obj.value);
             return result;
         }
 
@@ -123,7 +138,7 @@ namespace LuaInterface {
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
             
-            obj.value = (Int32)LuaStatic.GetObj(L, 2);
+            obj.value = (Int32)(double)LuaStatic.GetObj(L, 2);
             return result;
         }
 
@@ -138,7 +153,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.luaState, "Director");
+            LuaStatic.addGameObject2Lua(L, obj.luaState, "LuaState");
             return result;
         }
 
@@ -153,7 +168,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.scheduler, "Director");
+            LuaStatic.addGameObject2Lua(L, obj.scheduler, "Scheduler");
             return result;
         }
 
@@ -168,7 +183,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.uiManager, "Director");
+            LuaStatic.addGameObject2Lua(L, obj.uiManager, "UIManager");
             return result;
         }
 
@@ -183,7 +198,7 @@ namespace LuaInterface {
                 return result;
             }
             Director obj = LuaStatic.GetObj(L, 1) as Director;
-            LuaStatic.addGameObject2Lua(L, obj.eventDispatcher, "Director");
+            LuaStatic.addGameObject2Lua(L, obj.eventDispatcher, "EventDispatcher");
             return result;
         }
     }

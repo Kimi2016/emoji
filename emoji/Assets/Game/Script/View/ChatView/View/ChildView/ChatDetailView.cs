@@ -26,12 +26,12 @@ using System.Collections;
          ##       ###        ###               
 __________#_______####_______####______________
 
-                ÎÒÃÇµÄÎ´À´Ã»ÓĞBUG              
+                æˆ‘ä»¬çš„æœªæ¥æ²¡æœ‰BUG              
 * ==============================================================================
 * Filename: ChatDetailView
 * Created:  2016/3/13 11:23:36
 * Author:   HaYaShi ToShiTaKa
-* Purpose:  ÁÄÌìÓë¾­ÑéÌõµÄ½çÃæ
+* Purpose:  èŠå¤©ä¸ç»éªŒæ¡çš„ç•Œé¢
 * ==============================================================================
 */
 using System.Collections.Generic;
@@ -57,7 +57,7 @@ public class ChatDetailView : UIBase {
 	public UIInput inputBox {
 		get { return _inputBox; }
 	}
-	/* ÁÄÌìµ¯³ö²Ëµ¥ */
+	/* èŠå¤©å¼¹å‡ºèœå• */
 	private Transform _popMenu;
 	private GameObject _lockMessage;
 	private UILabel _labelLock;
@@ -247,7 +247,7 @@ public class ChatDetailView : UIBase {
 	private void ShowLockMessge() {
 		if (gameObject.activeSelf) {
 			_lockMessgeNum++;
-			_labelLock.text = string.Format("ÄãÓĞ{0}ÌõĞÂĞÅÏ¢", _lockMessgeNum);
+			_labelLock.text = string.Format("ä½ æœ‰{0}æ¡æ–°ä¿¡æ¯", _lockMessgeNum);
 			_lockMessage.SetActive(true);
 		}
 	}

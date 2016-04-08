@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaUIButton
-* Created:  4/7/2016 9:16:12 PM
+* Created:  4/8/2016 9:47:15 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  UIButton的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -39,11 +39,17 @@ namespace LuaInterface {
     using System.Collections;
 
     public class LuaUIButton {
-
         public static void Register(IntPtr L) {
             int oldTop = LuaDLL.lua_gettop(L);
+            LuaDLL.lua_getglobal(L, "UIButton");
 
-            LuaDLL.lua_newtable(L);
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "UIButton");
+                LuaDLL.lua_getglobal(L, "UIButton");
+            }
+
             LuaDLL.lua_pushstdcallcfunction(L, LuaUIButton.SetState, "SetState");
             LuaDLL.lua_pushcsharpproperty(L, "isEnabled", LuaUIButton.get_isEnabled, LuaUIButton.set_isEnabled);
             LuaDLL.lua_pushcsharpproperty(L, "normalSprite", LuaUIButton.get_normalSprite, LuaUIButton.set_normalSprite);
@@ -71,11 +77,20 @@ namespace LuaInterface {
 
             LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaStatic.GameObjectGC));
             LuaDLL.lua_setfield(L, -2, "__gc");
-
-            LuaDLL.lua_pushvalue(L, -1);
-            LuaDLL.lua_setglobal(L, "UIButton");
+            LuaDLL.lua_getglobal(L, "UIButtonColor");
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "UIButtonColor");
+                LuaDLL.lua_getglobal(L, "UIButtonColor");
+                LuaDLL.lua_setmetatable(L, -2);
+            }
+            else {
+                LuaDLL.lua_setmetatable(L, -2);
+            }
 
             LuaDLL.lua_settop(L, oldTop);
+
         }
 
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -89,7 +104,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            UIButtonColor.State arg1 = (UIButtonColor.State)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+            UIButtonColor.State arg1 = (UIButtonColor.State)(double)(LuaStatic.GetObj(L, 2));
             Boolean arg2 = (Boolean)LuaStatic.GetObj(L, 3);
             obj.SetState(arg1,arg2);
             return result;
@@ -106,7 +121,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.isEnabled, "UIButton");
+            LuaDLL.lua_pushboolean(L, obj.isEnabled);
             return result;
         }
 
@@ -137,7 +152,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.normalSprite, "UIButton");
+            LuaDLL.lua_pushstring(L, obj.normalSprite);
             return result;
         }
 
@@ -168,7 +183,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.normalSprite2D, "UIButton");
+            LuaStatic.addGameObject2Lua(L, obj.normalSprite2D, "Sprite");
             return result;
         }
 
@@ -215,7 +230,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.dragHighlight, "UIButton");
+            LuaDLL.lua_pushboolean(L, obj.dragHighlight);
             return result;
         }
 
@@ -246,7 +261,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.hoverSprite, "UIButton");
+            LuaDLL.lua_pushstring(L, obj.hoverSprite);
             return result;
         }
 
@@ -277,7 +292,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.pressedSprite, "UIButton");
+            LuaDLL.lua_pushstring(L, obj.pressedSprite);
             return result;
         }
 
@@ -308,7 +323,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.disabledSprite, "UIButton");
+            LuaDLL.lua_pushstring(L, obj.disabledSprite);
             return result;
         }
 
@@ -339,7 +354,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.hoverSprite2D, "UIButton");
+            LuaStatic.addGameObject2Lua(L, obj.hoverSprite2D, "Sprite");
             return result;
         }
 
@@ -370,7 +385,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.pressedSprite2D, "UIButton");
+            LuaStatic.addGameObject2Lua(L, obj.pressedSprite2D, "Sprite");
             return result;
         }
 
@@ -401,7 +416,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.disabledSprite2D, "UIButton");
+            LuaStatic.addGameObject2Lua(L, obj.disabledSprite2D, "Sprite");
             return result;
         }
 
@@ -432,7 +447,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.pixelSnap, "UIButton");
+            LuaDLL.lua_pushboolean(L, obj.pixelSnap);
             return result;
         }
 
@@ -463,7 +478,7 @@ namespace LuaInterface {
                 return result;
             }
             UIButton obj = LuaStatic.GetObj(L, 1) as UIButton;
-            LuaStatic.addGameObject2Lua(L, obj.onClick, "UIButton");
+            LuaStatic.addGameObject2Lua(L, obj.onClick, "List`1");
             return result;
         }
 

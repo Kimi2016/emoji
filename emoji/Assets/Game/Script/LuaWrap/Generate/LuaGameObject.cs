@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaGameObject
-* Created:  4/7/2016 9:16:12 PM
+* Created:  4/8/2016 9:47:15 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  GameObject的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -39,11 +39,18 @@ namespace LuaInterface {
     using System.Collections;
 
     public class LuaGameObject {
-
         public static void Register(IntPtr L) {
             int oldTop = LuaDLL.lua_gettop(L);
+            LuaDLL.lua_getglobal(L, "GameObject");
 
-            LuaDLL.lua_newtable(L);
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "GameObject");
+                LuaDLL.lua_getglobal(L, "GameObject");
+            }
+
+            LuaDLL.lua_pushstdcallcfunction(L, LuaGameObject.New, "New");
             LuaDLL.lua_pushstdcallcfunction(L, LuaGameObject.CreatePrimitive, "CreatePrimitive");
             LuaDLL.lua_pushstdcallcfunction(L, LuaGameObject.GetComponent, "GetComponent");
             LuaDLL.lua_pushstdcallcfunction(L, LuaGameObject.GetComponentInChildren, "GetComponentInChildren");
@@ -81,11 +88,51 @@ namespace LuaInterface {
 
             LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaStatic.GameObjectGC));
             LuaDLL.lua_setfield(L, -2, "__gc");
-
-            LuaDLL.lua_pushvalue(L, -1);
-            LuaDLL.lua_setglobal(L, "GameObject");
+            LuaDLL.lua_getglobal(L, "Object");
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "Object");
+                LuaDLL.lua_getglobal(L, "Object");
+                LuaDLL.lua_setmetatable(L, -2);
+            }
+            else {
+                LuaDLL.lua_setmetatable(L, -2);
+            }
 
             LuaDLL.lua_settop(L, oldTop);
+
+        }
+
+        [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+        public static int New(IntPtr L) {
+            int result = 1;
+            int count = LuaDLL.lua_gettop(L);
+
+            if (count == 2 &&
+                LuaStatic.CheckType(L, typeof(String), 2)) {
+                String arg1 = (String)LuaStatic.GetObj(L, 2);
+                LuaStatic.addGameObject2Lua(L, new UnityEngine.GameObject(arg1), "GameObject");
+
+                return result;
+            }
+            if (count == 1) {
+                LuaStatic.addGameObject2Lua(L, new UnityEngine.GameObject(), "GameObject");
+
+                return result;
+            }
+            if (count == 3 &&
+                LuaStatic.CheckType(L, typeof(String), 2) &&
+                LuaStatic.CheckType(L, typeof(Type[]), 3)) {
+                String arg1 = (String)LuaStatic.GetObj(L, 2);
+                Type[] arg2 = (Type[])LuaStatic.GetObj(L, 3);
+                LuaStatic.addGameObject2Lua(L, new UnityEngine.GameObject(arg1, arg2), "GameObject");
+
+                return result;
+            }
+            LuaStatic.traceback(L, "count not enough");
+            LuaDLL.lua_error(L);
+            return result;
         }
 
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -93,7 +140,7 @@ namespace LuaInterface {
             int result = 1;
             int count = LuaDLL.lua_gettop(L);
 
-            UnityEngine.PrimitiveType arg1 = (UnityEngine.PrimitiveType)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+            UnityEngine.PrimitiveType arg1 = (UnityEngine.PrimitiveType)(double)(LuaStatic.GetObj(L, 2));
             LuaStatic.addGameObject2Lua(L, UnityEngine.GameObject.CreatePrimitive(arg1), "GameObject");
             return result;
         }
@@ -106,7 +153,7 @@ namespace LuaInterface {
             if (count == 2 &&
                 LuaStatic.CheckType(L, typeof(Type), 2)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-                Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+                Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
                 LuaStatic.addGameObject2Lua(L, obj.GetComponent(arg1), "Component");
 
                 return result;
@@ -135,7 +182,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+            Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
             LuaStatic.addGameObject2Lua(L, obj.GetComponentInChildren(arg1), "Component");
             return result;
         }
@@ -151,7 +198,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+            Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
             LuaStatic.addGameObject2Lua(L, obj.GetComponentInParent(arg1), "Component");
             return result;
         }
@@ -164,7 +211,7 @@ namespace LuaInterface {
             if (count == 2 &&
                 LuaStatic.CheckType(L, typeof(Type), 2)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-                Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+                Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
                 UnityEngine.Component[] objs = obj.GetComponents(arg1);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
@@ -181,7 +228,7 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(Type), 2) &&
                 LuaStatic.CheckType(L, typeof(List<UnityEngine.Component>), 3)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-                Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+                Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
                 List<UnityEngine.Component> arg2 = (List<UnityEngine.Component>)LuaStatic.GetObj(L, 3);
                 obj.GetComponents(arg1, arg2);
 
@@ -200,7 +247,7 @@ namespace LuaInterface {
             if (count == 2 &&
                 LuaStatic.CheckType(L, typeof(Type), 2)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-                Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+                Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
                 UnityEngine.Component[] objs = obj.GetComponentsInChildren(arg1);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
@@ -217,7 +264,7 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(Type), 2) &&
                 LuaStatic.CheckType(L, typeof(Boolean), 3)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-                Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+                Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
                 Boolean arg2 = (Boolean)LuaStatic.GetObj(L, 3);
                 UnityEngine.Component[] objs = obj.GetComponentsInChildren(arg1, arg2);
                 LuaDLL.lua_newtable(L);
@@ -244,7 +291,7 @@ namespace LuaInterface {
             if (count == 2 &&
                 LuaStatic.CheckType(L, typeof(Type), 2)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-                Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+                Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
                 UnityEngine.Component[] objs = obj.GetComponentsInParent(arg1);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
@@ -261,7 +308,7 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(Type), 2) &&
                 LuaStatic.CheckType(L, typeof(Boolean), 3)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-                Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+                Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
                 Boolean arg2 = (Boolean)LuaStatic.GetObj(L, 3);
                 UnityEngine.Component[] objs = obj.GetComponentsInParent(arg1, arg2);
                 LuaDLL.lua_newtable(L);
@@ -362,7 +409,7 @@ namespace LuaInterface {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
                 Object arg2 = (Object)LuaStatic.GetObj(L, 3);
-                UnityEngine.SendMessageOptions arg3 = (UnityEngine.SendMessageOptions)Convert.ToInt32(LuaStatic.GetObj(L, 4));
+                UnityEngine.SendMessageOptions arg3 = (UnityEngine.SendMessageOptions)(double)(LuaStatic.GetObj(L, 4));
                 obj.SendMessageUpwards(arg1, arg2, arg3);
 
                 return result;
@@ -390,7 +437,7 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(UnityEngine.SendMessageOptions), 3)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
-                UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)Convert.ToInt32(LuaStatic.GetObj(L, 3));
+                UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)(double)(LuaStatic.GetObj(L, 3));
                 obj.SendMessageUpwards(arg1, arg2);
 
                 return result;
@@ -412,7 +459,7 @@ namespace LuaInterface {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
                 Object arg2 = (Object)LuaStatic.GetObj(L, 3);
-                UnityEngine.SendMessageOptions arg3 = (UnityEngine.SendMessageOptions)Convert.ToInt32(LuaStatic.GetObj(L, 4));
+                UnityEngine.SendMessageOptions arg3 = (UnityEngine.SendMessageOptions)(double)(LuaStatic.GetObj(L, 4));
                 obj.SendMessage(arg1, arg2, arg3);
 
                 return result;
@@ -440,7 +487,7 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(UnityEngine.SendMessageOptions), 3)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
-                UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)Convert.ToInt32(LuaStatic.GetObj(L, 3));
+                UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)(double)(LuaStatic.GetObj(L, 3));
                 obj.SendMessage(arg1, arg2);
 
                 return result;
@@ -462,7 +509,7 @@ namespace LuaInterface {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
                 Object arg2 = (Object)LuaStatic.GetObj(L, 3);
-                UnityEngine.SendMessageOptions arg3 = (UnityEngine.SendMessageOptions)Convert.ToInt32(LuaStatic.GetObj(L, 4));
+                UnityEngine.SendMessageOptions arg3 = (UnityEngine.SendMessageOptions)(double)(LuaStatic.GetObj(L, 4));
                 obj.BroadcastMessage(arg1, arg2, arg3);
 
                 return result;
@@ -490,7 +537,7 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(UnityEngine.SendMessageOptions), 3)) {
                 UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
-                UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)Convert.ToInt32(LuaStatic.GetObj(L, 3));
+                UnityEngine.SendMessageOptions arg2 = (UnityEngine.SendMessageOptions)(double)(LuaStatic.GetObj(L, 3));
                 obj.BroadcastMessage(arg1, arg2);
 
                 return result;
@@ -511,7 +558,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            Type arg1 = (Type)LuaStatic.GetObj(L, 2);
+            Type arg1 = LuaStatic.GetType(LuaStatic.GetObj(L, 2));
             LuaStatic.addGameObject2Lua(L, obj.AddComponent(arg1), "Component");
             return result;
         }
@@ -537,7 +584,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            LuaStatic.addGameObject2Lua(L, obj.transform, "GameObject");
+            LuaStatic.addGameObject2Lua(L, obj.transform, "Transform");
             return result;
         }
 
@@ -552,7 +599,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            LuaStatic.addGameObject2Lua(L, obj.layer, "GameObject");
+            LuaDLL.lua_pushnumber(L, obj.layer);
             return result;
         }
 
@@ -568,7 +615,7 @@ namespace LuaInterface {
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
             
-            obj.layer = (Int32)LuaStatic.GetObj(L, 2);
+            obj.layer = (Int32)(double)LuaStatic.GetObj(L, 2);
             return result;
         }
 
@@ -583,7 +630,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            LuaStatic.addGameObject2Lua(L, obj.activeSelf, "GameObject");
+            LuaDLL.lua_pushboolean(L, obj.activeSelf);
             return result;
         }
 
@@ -598,7 +645,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            LuaStatic.addGameObject2Lua(L, obj.activeInHierarchy, "GameObject");
+            LuaDLL.lua_pushboolean(L, obj.activeInHierarchy);
             return result;
         }
 
@@ -613,7 +660,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            LuaStatic.addGameObject2Lua(L, obj.isStatic, "GameObject");
+            LuaDLL.lua_pushboolean(L, obj.isStatic);
             return result;
         }
 
@@ -644,7 +691,7 @@ namespace LuaInterface {
                 return result;
             }
             UnityEngine.GameObject obj = LuaStatic.GetObj(L, 1) as UnityEngine.GameObject;
-            LuaStatic.addGameObject2Lua(L, obj.tag, "GameObject");
+            LuaDLL.lua_pushstring(L, obj.tag);
             return result;
         }
 

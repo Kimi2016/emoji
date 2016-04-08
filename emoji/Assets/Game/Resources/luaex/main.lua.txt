@@ -1,0 +1,24 @@
+
+local function main()
+    local directory = Director:GetInstance()
+    print(directory.value)
+    directory.value = 2
+    print(directory.value)
+
+    directory:print(112)
+
+    local ma = Director.GetInstance().uiManager
+    ma:OpenView(0)
+    directory:LogTest('Hellow World')
+
+    local go = GameObject
+    local time = os.clock()
+    print('begin creat 20000 gameObject now:'.. time)
+    for i = 1,20000 do
+        local v = go:New()
+        v:AddComponent('UIButton')
+    end
+    print('cost time:' .. os.clock() - time..'ms  now:'..os.clock())
+end
+
+main()

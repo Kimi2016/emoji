@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaScheduler
-* Created:  4/7/2016 9:16:11 PM
+* Created:  4/8/2016 9:47:15 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  Scheduler的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -39,11 +39,17 @@ namespace LuaInterface {
     using System.Collections;
 
     public class LuaScheduler {
-
         public static void Register(IntPtr L) {
             int oldTop = LuaDLL.lua_gettop(L);
+            LuaDLL.lua_getglobal(L, "Scheduler");
 
-            LuaDLL.lua_newtable(L);
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "Scheduler");
+                LuaDLL.lua_getglobal(L, "Scheduler");
+            }
+
             LuaDLL.lua_pushstdcallcfunction(L, LuaScheduler.MakeInstance, "MakeInstance");
             LuaDLL.lua_pushstdcallcfunction(L, LuaScheduler.SchedulerCSFun, "SchedulerCSFun");
             LuaDLL.lua_pushstdcallcfunction(L, LuaScheduler.UnSchedulerCSFun, "UnSchedulerCSFun");
@@ -62,11 +68,20 @@ namespace LuaInterface {
 
             LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaStatic.GameObjectGC));
             LuaDLL.lua_setfield(L, -2, "__gc");
-
-            LuaDLL.lua_pushvalue(L, -1);
-            LuaDLL.lua_setglobal(L, "Scheduler");
+            LuaDLL.lua_getglobal(L, "MonoBehaviour");
+            if (LuaDLL.lua_isnil(L, -1)) {
+                LuaDLL.lua_pop(L, 1);
+                LuaDLL.lua_newtable(L);
+                LuaDLL.lua_setglobal(L, "MonoBehaviour");
+                LuaDLL.lua_getglobal(L, "MonoBehaviour");
+                LuaDLL.lua_setmetatable(L, -2);
+            }
+            else {
+                LuaDLL.lua_setmetatable(L, -2);
+            }
 
             LuaDLL.lua_settop(L, oldTop);
+
         }
 
         [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -90,8 +105,8 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(Object), 5)) {
                 Scheduler obj = LuaStatic.GetObj(L, 1) as Scheduler;
                 Action arg1 = (Action)LuaStatic.GetObj(L, 2);
-                Single arg2 = (Single)Convert.ToInt32(LuaStatic.GetObj(L, 3));
-                Single arg3 = (Single)Convert.ToInt32(LuaStatic.GetObj(L, 4));
+                Single arg2 = (Single)(double)(LuaStatic.GetObj(L, 3));
+                Single arg3 = (Single)(double)(LuaStatic.GetObj(L, 4));
                 Object arg4 = (Object)LuaStatic.GetObj(L, 5);
                 LuaDLL.lua_pushnumber(L, obj.SchedulerCSFun(arg1, arg2, arg3, arg4));
 
@@ -103,8 +118,8 @@ namespace LuaInterface {
                 LuaStatic.CheckType(L, typeof(Single), 4)) {
                 Scheduler obj = LuaStatic.GetObj(L, 1) as Scheduler;
                 Action arg1 = (Action)LuaStatic.GetObj(L, 2);
-                Single arg2 = (Single)Convert.ToInt32(LuaStatic.GetObj(L, 3));
-                Single arg3 = (Single)Convert.ToInt32(LuaStatic.GetObj(L, 4));
+                Single arg2 = (Single)(double)(LuaStatic.GetObj(L, 3));
+                Single arg3 = (Single)(double)(LuaStatic.GetObj(L, 4));
                 LuaDLL.lua_pushnumber(L, obj.SchedulerCSFun(arg1, arg2, arg3));
 
                 return result;
@@ -125,7 +140,7 @@ namespace LuaInterface {
                 return result;
             }
             Scheduler obj = LuaStatic.GetObj(L, 1) as Scheduler;
-            Int32 arg1 = (Int32)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+            Int32 arg1 = (Int32)(double)(LuaStatic.GetObj(L, 2));
             LuaDLL.lua_pushnumber(L, obj.UnSchedulerCSFun(arg1));
             return result;
         }
@@ -141,7 +156,7 @@ namespace LuaInterface {
                 return result;
             }
             Scheduler obj = LuaStatic.GetObj(L, 1) as Scheduler;
-            Single arg1 = (Single)Convert.ToInt32(LuaStatic.GetObj(L, 2));
+            Single arg1 = (Single)(double)(LuaStatic.GetObj(L, 2));
             Action arg2 = (Action)LuaStatic.GetObj(L, 3);
             obj.SetTimeOut(arg1,arg2);
             return result;
