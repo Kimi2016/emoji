@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaScheduler
-* Created:  4/8/2016 9:47:15 PM
+* Created:  5/4/2016 11:45:56 AM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  Scheduler的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -81,6 +81,7 @@ namespace LuaInterface {
             }
 
             LuaDLL.lua_settop(L, oldTop);
+            LuaStatic.AddTypeDict(typeof(Scheduler));
 
         }
 

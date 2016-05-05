@@ -6,6 +6,7 @@ namespace LuaInterface {
     using System.Collections;
     using System.Text;
     using System.Security;
+    using UnityEngine;
 
 #pragma warning disable 414
     public class MonoPInvokeCallbackAttribute : System.Attribute {
@@ -177,6 +178,9 @@ namespace LuaInterface {
 
             return LuaDLL.lua_pcall(luaState, 0, -1, 0);
         }
+        public static float lua_tofloat(IntPtr luaState, int index) {
+            return (float)lua_tonumber(luaState, index);
+        }
         public static void lua_getglobal(IntPtr luaState, string name) {
             LuaDLL.lua_pushstring(luaState, name);
             LuaDLL.lua_gettable(luaState, LuaIndexes.LUA_GLOBALSINDEX);
@@ -279,7 +283,129 @@ namespace LuaInterface {
 
             LuaDLL.lua_setfield(luaState, -2, propertyName);
         }
+        public static void lua_setmetatable(IntPtr luaState, string metatable) {
+            LuaDLL.lua_getglobal(luaState, metatable);
+            if (LuaDLL.lua_isnil(luaState, -1)) {
+                LuaDLL.lua_pop(luaState, 1);
+            }
+            else {
+                LuaDLL.lua_setmetatable(luaState, -2);
+            }
+        }
+        public static void lua_pushrect(IntPtr luaState, Rect rect) {
+            LuaDLL.lua_newtable(luaState);
+            LuaDLL.lua_pushnumber(luaState, (double)rect.x);
+            LuaDLL.lua_setfield(luaState, -2, "x");
+            LuaDLL.lua_pushnumber(luaState, (double)rect.y);
+            LuaDLL.lua_setfield(luaState, -2, "y");
+            LuaDLL.lua_pushnumber(luaState, (double)rect.width);
+            LuaDLL.lua_setfield(luaState, -2, "width");
+            LuaDLL.lua_pushnumber(luaState, (double)rect.height);
+            LuaDLL.lua_setfield(luaState, -2, "height");
 
+            lua_setmetatable(luaState, "Rect");
+
+            LuaDLL.lua_pushvalue(luaState, -1);
+        }
+        public static void lua_pushvector2(IntPtr luaState, Vector2 vector2) {
+            LuaDLL.lua_newtable(luaState);
+            LuaDLL.lua_pushnumber(luaState, (double)vector2.x);
+            LuaDLL.lua_setfield(luaState, -2, "x");
+            LuaDLL.lua_pushnumber(luaState, (double)vector2.y);
+            LuaDLL.lua_setfield(luaState, -2, "y");
+
+            lua_setmetatable(luaState, "Vector2");
+
+            LuaDLL.lua_pushvalue(luaState, -1);
+        }
+        public static void lua_pushvector3(IntPtr luaState, Vector3 v) {
+            LuaDLL.lua_newtable(luaState);
+            LuaDLL.lua_pushnumber(luaState, (double)v.x);
+            LuaDLL.lua_setfield(luaState, -2, "x");
+            LuaDLL.lua_pushnumber(luaState, (double)v.y);
+            LuaDLL.lua_setfield(luaState, -2, "y");
+            LuaDLL.lua_pushnumber(luaState, (double)v.z);
+            LuaDLL.lua_setfield(luaState, -2, "z");
+
+            lua_setmetatable(luaState, "Vector3");
+
+            LuaDLL.lua_pushvalue(luaState, -1);
+        }
+        public static void lua_pushvector4(IntPtr luaState, Vector4 v) {
+            LuaDLL.lua_newtable(luaState);
+            LuaDLL.lua_pushnumber(luaState, (double)v.x);
+            LuaDLL.lua_setfield(luaState, -2, "x");
+            LuaDLL.lua_pushnumber(luaState, (double)v.y);
+            LuaDLL.lua_setfield(luaState, -2, "y");
+            LuaDLL.lua_pushnumber(luaState, (double)v.z);
+            LuaDLL.lua_setfield(luaState, -2, "z");
+            LuaDLL.lua_pushnumber(luaState, (double)v.w);
+            LuaDLL.lua_setfield(luaState, -2, "w");
+
+            lua_setmetatable(luaState, "Vector4");
+
+            LuaDLL.lua_pushvalue(luaState, -1);
+        }
+        //public static LuaTable lua_toluatable(IntPtr luaState, int index) {
+        //    LuaDLL.lua_pushvalue(luaState, index);
+        //    //return new LuaTable(LuaDLL.luaL_ref(luaState, LuaIndexes.LUA_REGISTRYINDEX), luaState);
+        //}
+        public static Rect lua_torect(IntPtr L, int index) {
+            LuaDLL.lua_getfield(L, index, "x");
+            float num = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "y");
+            float num2 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "width");
+            float num3 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "height");
+            float num4 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            return new Rect(num, num2, num3, num4);
+        }
+        public static Vector2 lua_tovector2(IntPtr L, int index) {
+            LuaDLL.lua_getfield(L, index, "x");
+            float num = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "y");
+            float num2 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            return new Vector2(num, num2);
+        }
+        public static Vector3 lua_tovector3(IntPtr L, int index) {
+            LuaDLL.lua_getfield(L, index, "x");
+            float num = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "y");
+            float num2 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "z");
+            float num3 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            return new Vector3(num, num2, num3);
+        }
+        public static Vector4 lua_tovector4(IntPtr L, int index) {
+            LuaDLL.lua_getfield(L, index, "x");
+            float num = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "y");
+            float num2 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "z");
+            float num3 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            LuaDLL.lua_getfield(L, index, "w");
+            float num4 = LuaDLL.lua_tofloat(L, -1);
+            LuaDLL.lua_pop(L, 1);
+            return new Vector4(num, num2, num3, num4);
+        }
+        public static bool lua_metatableequal(IntPtr luaState, int index, string metatable) {
+            LuaDLL.lua_getmetatable(luaState, index);
+            LuaDLL.lua_getglobal(luaState, metatable);
+            return LuaDLL.lua_equal(luaState, -1, -2) > 0 ? true : false;
+        }
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_call(IntPtr luaState, int nArgs, int nResults);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]

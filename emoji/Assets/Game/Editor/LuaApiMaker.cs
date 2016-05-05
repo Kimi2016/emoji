@@ -48,14 +48,19 @@ static public class LuaApiMaker {
     public static string saveDir = Application.dataPath + "/Game/Script/LuaWrap/Generate/";
     static BindingFlags binding = BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase;
     static List<Type> typeList = new List<Type> { 
+            typeof(UnityEngine.Object),
+            typeof(Transform),
+            typeof(GameObject),
+            typeof(Component),
+            typeof(MonoBehaviour),
+            typeof(Resources),
+            typeof(UIButton),
+            typeof(UILabel),
             typeof(Director),
             typeof(Scheduler),
             typeof(UIManager),
-            typeof(GameObject),
-            typeof(UIButton),
-            typeof(UILabel),
-            typeof(MonoBehaviour),
-        };
+    };
+
     static List<string> usingList = new List<string> {
 			"System.Collections.Generic","System","System.Collections",
 		};
@@ -95,8 +100,9 @@ static public class LuaApiMaker {
             propertys.Clear();
             fields.Clear();
             nameCounter.Clear();
-
-            constructs.AddRange(type.GetConstructors(bindType));
+            if (!type.IsValueType) {
+                constructs.AddRange(type.GetConstructors(bindType));
+            }
             methods.AddRange(type.GetMethods(bindType));
             propertys.AddRange(type.GetProperties(bindType));
             fields.AddRange(type.GetFields(bindType));
@@ -136,7 +142,7 @@ static public class LuaApiMaker {
                     fields.RemoveAt(i);
                 }
             }
-            
+
             sb.AppendFormat("    public class Lua{0}", name);
             sb.Append(" {");
             sb.Append("\r\n");
@@ -144,7 +150,10 @@ static public class LuaApiMaker {
             GenRegister(sb, type);
             nameCounter.Clear();
 
-            GenConstructs(sb);
+            if (!type.IsValueType) {
+                GenConstructs(sb);
+            }
+            
             GenFunctions(sb);
             GenPropertys(sb);
             GenFields(sb);
@@ -321,7 +330,7 @@ __________#_______####_______####______________
             textWriter.Close();
         }
     }
-   
+
     #region gen functions
     static void GenConstruct(ConstructorInfo c, StringBuilder sb) {
         AppendFunctionHead("New", sb);
@@ -354,7 +363,7 @@ __________#_______####_______####______________
         sb.Append("\r\n            ");
 
         text = text.Remove(text.Length - 3, 3);
-        GenPushStr(m.ReturnType, text, sb);
+        GenPushStr(m.ReturnType, text, sb, null);
         AppendFunctionEnd(sb);
 
         //注册set方法
@@ -370,7 +379,7 @@ __________#_______####_______####______________
         else {
             text = "\r\n            " + "obj.";
         }
-        name = string.Format("({0})",TrimNameSpace(paramInfos[0].ParameterType));
+        name = string.Format("({0})", TrimNameSpace(paramInfos[0].ParameterType));
 
         if (paramInfos[0].ParameterType.IsPrimitive && paramInfos[0].ParameterType != typeof(bool)) {
             name += "(double)";
@@ -410,7 +419,7 @@ __________#_______####_______####______________
         sb.Append("\r\n            ");
 
         text = text.Remove(text.Length - 3, 3);
-        GenPushStr(p.FieldType, text, sb);
+        GenPushStr(p.FieldType, text, sb, null);
         AppendFunctionEnd(sb);
 
         //注册set方法
@@ -452,7 +461,7 @@ __________#_______####_______####______________
         CheckArgsCount(m, sb);
         AppendFunctionEnd(sb);
     }
-    
+
     #region append
     static void AppendFunctionHead(MemberInfo mb, StringBuilder sb) {
         AppendFunctionHead(mb.Name, sb);
@@ -494,10 +503,7 @@ __________#_______####_______####______________
         if (methodList.Count <= 1) {
             isReturn = info.ReturnType != typeof(void);
             paramInfos = info.GetParameters();
-            if (CheckParamsIsRef(paramInfos)) {
-                return;
-            }
-            count = info.IsStatic ? paramInfos.Length : paramInfos.Length + 1;
+            count = paramInfos.Length + 1;
             if (!info.IsStatic) {
                 sb.AppendFormat(@"
             if (count != {0}){2}
@@ -512,10 +518,15 @@ __________#_______####_______####______________
                 argsText = TrimNameSpace(info.ReflectedType) + "." + info.Name + "(";
             }
             for (int i = 0; i < paramInfos.Length; i++) {
-                sb.Append("\r\n            ");
-                AppendArgs(sb, paramInfos, i);
+                AppendArgs("\r\n            ", sb, paramInfos, i);
                 if (i != 0) {
                     argsText += ",";
+                }
+                if (paramInfos[i].IsOut) {
+                    argsText += "out ";
+                }
+                else if (paramInfos[i].IsIn) {
+                    argsText += "in ";
                 }
                 argsText += string.Format("arg{0}", i + 1);
             }
@@ -523,21 +534,23 @@ __________#_______####_______####______________
             argsText += ");\r\n";
             if (isReturn) {
                 argsText = argsText.Remove(argsText.Length - 3, 3);
-                GenPushStr(info.ReturnType, argsText, sb);
+                GenPushStr(info.ReturnType, argsText, sb, GenTypeObjectNameString(paramInfos));
             }
             else {
                 sb.Append(argsText);
             }
-
+            for (int i = 0; i < paramInfos.Length; i++) {
+                if (paramInfos[i].IsOut) {
+                    sb.Append("            ");
+                    GenPushStr(paramInfos[i].ParameterType, string.Format("arg{0}", i + 1), sb, null);
+                }
+            }
         }
         else {
             for (int i = 0; i < methodList.Count; i++) {
                 isReturn = methodList[i].ReturnType != typeof(void);
                 paramInfos = methodList[i].GetParameters();
-                if (CheckParamsIsRef(paramInfos)) {
-                    continue;
-                }
-                count = methodList[i].IsStatic ? paramInfos.Length : paramInfos.Length + 1;
+                count = paramInfos.Length + 1;
                 string condition = "count == " + count;
                 for (int j = 0; j < paramInfos.Length; j++) {
                     condition += " &&\r\n                LuaStatic.CheckType(L, typeof(" + TrimNameSpace(paramInfos[j].ParameterType) + "), " + (j + 2).ToString() + ")";
@@ -552,10 +565,15 @@ __________#_______####_______####______________
                     argsText = TrimNameSpace(info.ReflectedType) + "." + info.Name + "(";
                 }
                 for (int j = 0; j < paramInfos.Length; j++) {
-                    sb.Append("\r\n                ");
-                    AppendArgs(sb, paramInfos, j);
+                    AppendArgs("\r\n                ", sb, paramInfos, j);
                     if (j != 0) {
                         argsText += ", ";
+                    }
+                    if (paramInfos[j].IsOut) {
+                        argsText += "out ";
+                    }
+                    else if (paramInfos[j].IsIn) {
+                        argsText += "in ";
                     }
                     argsText += string.Format("arg{0}", j + 1);
                 }
@@ -563,10 +581,16 @@ __________#_______####_______####______________
                 sb.Append("\r\n                ");
                 if (isReturn) {
                     argsText = argsText.Remove(argsText.Length - 3, 3);
-                    GenPushStr(info.ReturnType, argsText, sb);
+                    GenPushStr(info.ReturnType, argsText, sb, true, GenTypeObjectNameString(paramInfos));
                 }
                 else {
                     sb.Append(argsText);
+                }
+                for (int j = 0; j < paramInfos.Length; j++) {
+                    if (paramInfos[j].IsOut) {
+                        sb.Append("                ");
+                        GenPushStr(paramInfos[i].ParameterType, string.Format("arg{0}", j + 1), sb, true, null);
+                    }
                 }
                 sb.Append("\r\n                return result;");
                 sb.Append("\r\n            }");
@@ -575,8 +599,6 @@ __________#_______####_______####______________
                     sb.Append("\r\n            LuaStatic.traceback(L, 'count not enough');");
                     sb.Append("\r\n            LuaDLL.lua_error(L);\r\n");
                 }
-
-
             }
         }
     }
@@ -591,8 +613,7 @@ __________#_______####_______####______________
             argsText = "new " + TrimNameSpace(info.ReflectedType) + "(";
 
             for (int i = 0; i < paramInfos.Length; i++) {
-                sb.Append("\r\n            ");
-                AppendArgs(sb, paramInfos, i);
+                AppendArgs("\r\n            ", sb, paramInfos, i);
                 if (i != 0) {
                     argsText += ",";
                 }
@@ -602,7 +623,7 @@ __________#_______####_______####______________
             argsText += ");\r\n";
             if (isReturn) {
                 argsText = argsText.Remove(argsText.Length - 3, 3);
-                GenPushStr(info.ReflectedType, argsText, sb);
+                GenPushStr(info.ReflectedType, argsText, sb, GenTypeObjectNameString(paramInfos));
             }
 
         }
@@ -619,8 +640,7 @@ __________#_______####_______####______________
                 argsText = "new " + TrimNameSpace(info.ReflectedType) + "(";
 
                 for (int j = 0; j < paramInfos.Length; j++) {
-                    sb.Append("\r\n                ");
-                    AppendArgs(sb, paramInfos, j);
+                    AppendArgs("\r\n                ", sb, paramInfos, j);
                     if (j != 0) {
                         argsText += ", ";
                     }
@@ -630,7 +650,7 @@ __________#_______####_______####______________
                 sb.Append("\r\n                ");
                 if (isReturn) {
                     argsText = argsText.Remove(argsText.Length - 3, 3);
-                    GenPushStr(info.ReflectedType, argsText, sb);
+                    GenPushStr(info.ReflectedType, argsText, sb, true, GenTypeObjectNameString(paramInfos));
                 }
 
                 sb.Append("\r\n                return result;");
@@ -645,18 +665,30 @@ __________#_______####_______####______________
             }
         }
     }
-    static void AppendArgs(StringBuilder sb, ParameterInfo[] paramInfos, int index) {
+    static void AppendArgs(string space, StringBuilder sb, ParameterInfo[] paramInfos, int index) {
         Type paramType = paramInfos[index].ParameterType;
+        sb.Append(space);
         if (paramType.IsPrimitive && paramType != typeof(bool) || paramType.IsEnum) {
             sb.AppendFormat("{0} arg{1} = ({0})(double)(LuaStatic.GetObj(L, {2}));", TrimNameSpace(paramInfos[index].ParameterType), index + 1, index + 2);
         }
-        else if(paramType == typeof(Type)){
-            sb.AppendFormat("{0} arg{1} = LuaStatic.GetType(LuaStatic.GetObj(L, {2}));", TrimNameSpace(paramInfos[index].ParameterType), index + 1, index + 2);
+        else if (paramType == typeof(Type)) {
+            sb.AppendFormat("object type{0} = LuaStatic.GetObj(L, {1});", index + 1, index + 2);
+            sb.Append(space);
+            sb.AppendFormat("{0} arg{1} = LuaStatic.GetType(type{1});", TrimNameSpace(paramInfos[index].ParameterType), index + 1);
         }
         else {
             sb.AppendFormat("{0} arg{1} = ({0})LuaStatic.GetObj(L, {2});", TrimNameSpace(paramInfos[index].ParameterType), index + 1, index + 2);
         }
 
+    }
+    static string GenTypeObjectNameString(ParameterInfo[] paramInfos) {
+        if (paramInfos.Length <= 0) {
+            return null;
+        }
+        if (paramInfos[paramInfos.Length - 1].ParameterType != typeof(Type)) {
+            return null;
+        }
+        return string.Format("(string)type{0}", paramInfos.Length);
     }
     static bool CheckParamsIsRef(ParameterInfo[] param) {
         for (int i = 0; i < param.Length; i++) {
@@ -667,15 +699,18 @@ __________#_______####_______####______________
         return false;
     }
     #endregion
-    
-    static void GenPushStr(Type t, string arg, StringBuilder sb) {
-        if (t == typeof(int)) {
+
+    static void GenPushStr(Type t, string arg, StringBuilder sb, string typeName) {
+        GenPushStr(t, arg, sb, false, typeName);
+    }
+    static void GenPushStr(Type t, string arg, StringBuilder sb, bool isOver,string typeName) {
+        if (t == typeof(int) || t == typeof(int).MakeByRefType()) {
             sb.AppendFormat("LuaDLL.lua_pushnumber(L, {0});\r\n", arg);
         }
-        else if (t == typeof(bool)) {
+        else if (t == typeof(bool) || t == typeof(bool).MakeByRefType()) {
             sb.AppendFormat("LuaDLL.lua_pushboolean(L, {0});\r\n", arg);
         }
-        else if (t == typeof(string)) {
+        else if (t == typeof(string) || t == typeof(string).MakeByRefType()) {
             sb.AppendFormat("LuaDLL.lua_pushstring(L, {0});\r\n", arg);
         }
         else if (t == typeof(IntPtr)) {
@@ -685,21 +720,35 @@ __________#_______####_______####______________
             sb.AppendFormat("LuaDLL.lua_pushnumber(L, {0});\r\n", arg);
         }
         else if (t.IsArray) {
-            sb.AppendFormat("{0}[] objs = {1};\r\n", GetArrayItem(t, true), arg);
-            sb.Append("                LuaDLL.lua_newtable(L);\r\n");
-            sb.Append("                int num2 = 0;\r\n");
-            sb.Append("                foreach (var item in objs) {\r\n");
-            sb.AppendFormat("                    LuaStatic.addGameObject2Lua(L, item, '{0}');\r\n", GetArrayItem(t, false));
-            sb.Append("                    LuaDLL.lua_pushnumber(L, (double)(++num2));\r\n");
-            sb.Append("                    LuaDLL.lua_insert(L, -2);\r\n");
-            sb.Append("                    LuaDLL.lua_settable(L, -3);\r\n");
-            sb.Append("                }\r\n");
+            string space = isOver ? "                " : "            ";
+            sb.AppendFormat("IEnumerable objs = (IEnumerable){0};\r\n", arg);
+            sb.Append(space + "LuaDLL.lua_newtable(L);\r\n");
+            sb.Append(space + "int num2 = 0;\r\n");
+            sb.Append(space + "foreach (var item in objs) {\r\n");
+            sb.Append(space + "    ");
+            GenPushStr(t.GetElementType(), string.Format("({0})item", TrimNameSpace(t.GetElementType())), sb, isOver, typeName);
+            sb.Append(space + "    LuaDLL.lua_pushnumber(L, (double)(++num2));\r\n");
+            sb.Append(space + "    LuaDLL.lua_insert(L, -2);\r\n");
+            sb.Append(space + "    LuaDLL.lua_settable(L, -3);\r\n");
+            sb.Append(space + "}\r\n");
+        }
+        else if (t == typeof(Rect)) {
+            sb.AppendFormat("LuaDLL.lua_pushrect(L, {0});\r\n", arg);
+        }
+        else if (t == typeof(Vector2)) {
+            sb.AppendFormat("LuaDLL.lua_pushvector2(L, {0});\r\n", arg);
+        }
+        else if (t == typeof(Vector3)) {
+            sb.AppendFormat("LuaDLL.lua_pushvector3(L, {0});\r\n", arg);
+        }
+        else if (t == typeof(Vector4)) {
+            sb.AppendFormat("LuaDLL.lua_pushvector4(L, {0});\r\n", arg);
         }
         else {
-            sb.AppendFormat("LuaStatic.addGameObject2Lua(L, {0}, '{1}');\r\n", arg, t.Name);
+            sb.AppendFormat("LuaStatic.addGameObject2Lua(L, {0}, {1});\r\n", arg, string.IsNullOrEmpty(typeName) ? string.Format("'{0}'",t.Name) : typeName);
         }
     }
-    
+
     #endregion
 
     #region gen regist function
@@ -720,7 +769,7 @@ __________#_______####_______####______________
             RegisterField(fields[i], sb);
         }
 
-        AppendRegisterEnd(sb, classType.BaseType);
+        AppendRegisterEnd(sb, classType);
     }
     static void RegisterConstruct(ConstructorInfo c, StringBuilder sb) {
         sb.AppendFormat("            LuaDLL.lua_pushstdcallcfunction(L, {0}.{1}, '{1}');\r\n", "Lua" + c.ReflectedType.Name, "New");
@@ -760,7 +809,7 @@ __________#_______####_______####______________
         sb.Append("            }\r\n");
         sb.Append("\r\n");
     }
-    static void AppendRegisterEnd(StringBuilder sb, Type baseType) {
+    static void AppendRegisterEnd(StringBuilder sb, Type classType) {
         sb.Append(@"
             LuaDLL.lua_getglobal(L, 'readIndex');
             LuaDLL.lua_pushvalue(L, -1);
@@ -774,8 +823,8 @@ __________#_______####_______####______________
 
             LuaDLL.lua_pushstdcallcfunction(L, new LuaCSFunction(LuaStatic.GameObjectGC));
             LuaDLL.lua_setfield(L, -2, '__gc');");
-
-        if (baseType != null && baseType != typeof(object)) {
+        Type baseType = classType.BaseType;
+        if (baseType != null && classType.BaseType != typeof(object)) {
             sb.AppendFormat("\r\n            LuaDLL.lua_getglobal(L, '{0}');\r\n", baseType.Name);
             sb.Append("            if (LuaDLL.lua_isnil(L, -1)) {\r\n");
             sb.Append("                LuaDLL.lua_pop(L, 1);\r\n");
@@ -789,7 +838,7 @@ __________#_______####_______####______________
             sb.Append("            }");
         }
         sb.Append("\r\n\r\n            LuaDLL.lua_settop(L, oldTop);\r\n");
-
+        sb.AppendFormat("            LuaStatic.AddTypeDict(typeof({0}));\r\n", classType.FullName);
         sb.Append("\r\n        }\r\n");
     }
     #endregion
@@ -809,7 +858,7 @@ __________#_______####_______####______________
             }
         }
         else {
-            string nameSpace = string.IsNullOrEmpty(fieldType.Namespace)?"":fieldType.Namespace + ".";
+            string nameSpace = string.IsNullOrEmpty(fieldType.Namespace) ? "" : fieldType.Namespace + ".";
             fullName = nameSpace + fieldType.Name.Substring(0, fieldType.Name.Length - 2) + "<";
             for (int i = 0; i < usingList.Count; i++) {
                 fullName = fullName.Replace(usingList[i] + ".", "");
@@ -823,7 +872,7 @@ __________#_______####_______####______________
 
             }
         }
-        return fullName.Replace("+", ".").Replace("&","");
+        return fullName.Replace("+", ".").Replace("&", "");
     }
     static string GetArrayItem(Type arryType, bool isFull) {
         string result = string.Empty;

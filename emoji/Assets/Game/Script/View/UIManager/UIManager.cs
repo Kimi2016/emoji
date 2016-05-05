@@ -36,6 +36,7 @@ __________#_______####_______####______________
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using LuaInterface;
 
 public class UIManager {
 	private static UIManager mInstance;
@@ -57,7 +58,7 @@ public class UIManager {
 			mUIRoot = camera.transform;
 		}
 		else {
-			GameObject go = Resources.Load<GameObject>(GameConst.ResourceUrl.UI_ROOT);
+            GameObject go = Resources.Load(GameConst.ResourceUrl.UI_ROOT, typeof(GameObject)) as GameObject;
 			mUIRoot = GameObject.Instantiate<GameObject>(go).transform;
 			mUIRoot.name = go.name;
 		}
@@ -114,7 +115,7 @@ public class UIManager {
 
 		UIBase uiBase = ui.GetComponent<UIBase>();
 		if (uiBase == null) {
-			uiBase = ui.AddComponent(Type.GetType(name)) as UIBase;
+			uiBase = ui.AddComponent(LuaStatic.GetType(name)) as UIBase;
 		}
 		mCachedUINameList.Add(uiName);
 		mCachedUIDict[uiName] = uiBase;

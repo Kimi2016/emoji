@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaUILabel
-* Created:  4/8/2016 9:47:16 PM
+* Created:  5/4/2016 11:45:56 AM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  UILabel的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -134,6 +134,7 @@ namespace LuaInterface {
             }
 
             LuaDLL.lua_settop(L, oldTop);
+            LuaStatic.AddTypeDict(typeof(UILabel));
 
         }
 
@@ -150,14 +151,14 @@ namespace LuaInterface {
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
             UnityEngine.Transform arg1 = (UnityEngine.Transform)LuaStatic.GetObj(L, 2);
             UnityEngine.Vector3[] objs = obj.GetSides(arg1);
-                LuaDLL.lua_newtable(L);
-                int num2 = 0;
-                foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, "Vector3");
-                    LuaDLL.lua_pushnumber(L, (double)(++num2));
-                    LuaDLL.lua_insert(L, -2);
-                    LuaDLL.lua_settable(L, -3);
-                }
+            LuaDLL.lua_newtable(L);
+            int num2 = 0;
+            foreach (var item in objs) {
+                LuaDLL.lua_pushvector3(L, item);
+                LuaDLL.lua_pushnumber(L, (double)(++num2));
+                LuaDLL.lua_insert(L, -2);
+                LuaDLL.lua_settable(L, -3);
+            }
             return result;
         }
 
@@ -404,7 +405,7 @@ namespace LuaInterface {
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
             BetterList<UnityEngine.Vector3> arg1 = (BetterList<UnityEngine.Vector3>)LuaStatic.GetObj(L, 2);
             Int32 arg2 = (Int32)(double)(LuaStatic.GetObj(L, 3));
-            LuaStatic.addGameObject2Lua(L, obj.ApplyOffset(arg1,arg2), "Vector2");
+            LuaDLL.lua_pushvector2(L, obj.ApplyOffset(arg1,arg2));
             return result;
         }
 
@@ -495,6 +496,33 @@ namespace LuaInterface {
         public static int Wrap(IntPtr L) {
             int result = 1;
             int count = LuaDLL.lua_gettop(L);
+
+            if (count == 3 &&
+                LuaStatic.CheckType(L, typeof(String), 2) &&
+                LuaStatic.CheckType(L, typeof(String), 3)) {
+                UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
+                String arg1 = (String)LuaStatic.GetObj(L, 2);
+                String arg2 = (String)LuaStatic.GetObj(L, 3);
+                LuaDLL.lua_pushboolean(L, obj.Wrap(arg1, out arg2));
+                LuaDLL.lua_pushstring(L, arg2);
+
+                return result;
+            }
+            if (count == 4 &&
+                LuaStatic.CheckType(L, typeof(String), 2) &&
+                LuaStatic.CheckType(L, typeof(String), 3) &&
+                LuaStatic.CheckType(L, typeof(Int32), 4)) {
+                UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
+                String arg1 = (String)LuaStatic.GetObj(L, 2);
+                String arg2 = (String)LuaStatic.GetObj(L, 3);
+                Int32 arg3 = (Int32)(double)(LuaStatic.GetObj(L, 4));
+                LuaDLL.lua_pushboolean(L, obj.Wrap(arg1, out arg2, arg3));
+                LuaDLL.lua_pushstring(L, arg2);
+
+                return result;
+            }
+            LuaStatic.traceback(L, "count not enough");
+            LuaDLL.lua_error(L);
             return result;
         }
 
@@ -1235,14 +1263,14 @@ namespace LuaInterface {
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
             UnityEngine.Vector3[] objs = obj.localCorners;
-                LuaDLL.lua_newtable(L);
-                int num2 = 0;
-                foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, "Vector3");
-                    LuaDLL.lua_pushnumber(L, (double)(++num2));
-                    LuaDLL.lua_insert(L, -2);
-                    LuaDLL.lua_settable(L, -3);
-                }
+            LuaDLL.lua_newtable(L);
+            int num2 = 0;
+            foreach (var item in objs) {
+                LuaDLL.lua_pushvector3(L, item);
+                LuaDLL.lua_pushnumber(L, (double)(++num2));
+                LuaDLL.lua_insert(L, -2);
+                LuaDLL.lua_settable(L, -3);
+            }
             return result;
         }
 
@@ -1258,14 +1286,14 @@ namespace LuaInterface {
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
             UnityEngine.Vector3[] objs = obj.worldCorners;
-                LuaDLL.lua_newtable(L);
-                int num2 = 0;
-                foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, "Vector3");
-                    LuaDLL.lua_pushnumber(L, (double)(++num2));
-                    LuaDLL.lua_insert(L, -2);
-                    LuaDLL.lua_settable(L, -3);
-                }
+            LuaDLL.lua_newtable(L);
+            int num2 = 0;
+            foreach (var item in objs) {
+                LuaDLL.lua_pushvector3(L, item);
+                LuaDLL.lua_pushnumber(L, (double)(++num2));
+                LuaDLL.lua_insert(L, -2);
+                LuaDLL.lua_settable(L, -3);
+            }
             return result;
         }
 
@@ -1280,7 +1308,7 @@ namespace LuaInterface {
                 return result;
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
-            LuaStatic.addGameObject2Lua(L, obj.drawingDimensions, "Vector4");
+            LuaDLL.lua_pushvector4(L, obj.drawingDimensions);
             return result;
         }
 
@@ -1388,7 +1416,7 @@ namespace LuaInterface {
                 return result;
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
-            LuaStatic.addGameObject2Lua(L, obj.effectDistance, "Vector2");
+            LuaDLL.lua_pushvector2(L, obj.effectDistance);
             return result;
         }
 
@@ -1434,7 +1462,7 @@ namespace LuaInterface {
                 return result;
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
-            LuaStatic.addGameObject2Lua(L, obj.printedSize, "Vector2");
+            LuaDLL.lua_pushvector2(L, obj.printedSize);
             return result;
         }
 
@@ -1449,7 +1477,7 @@ namespace LuaInterface {
                 return result;
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
-            LuaStatic.addGameObject2Lua(L, obj.localSize, "Vector2");
+            LuaDLL.lua_pushvector2(L, obj.localSize);
             return result;
         }
 

@@ -39,8 +39,6 @@ using UnityEngine;
 using LuaInterface;
 using System.Runtime.InteropServices;
 
-[Serializable] // 指示可序列化
-[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)] //平铺结构;Ansi字符;结构成员各按1字节对齐
 public class Director : MonoBehaviour {
 	private static Director mInstance;
 	public static Director GetInstance() {
@@ -88,14 +86,23 @@ public class Director : MonoBehaviour {
 	void Awake() {
 		mInstance = this;
 		mScheduler = Scheduler.MakeInstance();
-		mUIManager = UIManager.MakeInstance();
+		//mUIManager = UIManager.MakeInstance();
 		mEventDispatcher = EventDispatcher.MakeInstance();
 		mLuaState = new LuaState();
 	}
 	void Start() {
-        mLuaState.DoFile("lua/class.lua");
+        mLuaState.DoFile("lua/global.lua");
         LuaRegister.Register(mLuaState.L);
         mLuaState.DoFile("lua/main.lua");
+        object[] args = mLuaState.CallGlobalFunction("test", new object[] { "test global function" }, 1);
+        foreach (var item in args) {
+            print(item.ToString());
+        }
+
+        args = mLuaState.CallTableFunction("testtable", "test", new object[] { "test table function" }, 1);
+        foreach (var item in args) {
+            print(item.ToString());
+        }
 	}
 	void Update() { 
 		

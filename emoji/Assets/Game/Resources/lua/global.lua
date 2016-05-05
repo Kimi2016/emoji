@@ -1,0 +1,5 @@
+require("preload/class/class")
+require("preload/struct/Rect")
+require("preload/struct/Vector2")
+require("preload/struct/Vector3")
+require("preload/struct/Vector4")

@@ -68,11 +68,15 @@
     <Compile Include="Assets\Game\Script\Datas\DataManager.cs" />
     <Compile Include="Assets\Game\Script\GameConst\Enum\ClientEnum.cs" />
     <Compile Include="Assets\Game\Script\GameConst\GameConst.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaComponent.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaDirector.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaGameObject.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaMonoBehaviour.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaObject.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaRegister.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaResources.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaScheduler.cs" />
+    <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaTransform.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaUIButton.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaUILabel.cs" />
     <Compile Include="Assets\Game\Script\LuaWrap\Generate\LuaUIManager.cs" />
@@ -262,34 +266,11 @@
     <Compile Include="Assets\NGUICustom\NGUITextCustom.cs" />
     <Compile Include="Assets\NGUICustom\UIEmoji.cs" />
     <Compile Include="Assets\NGUICustom\UILabelCustom.cs" />
-    <Compile Include="Assets\uLua\Core\CheckType.cs" />
-    <Compile Include="Assets\uLua\Core\GenerateEventAssembly.cs" />
-    <Compile Include="Assets\uLua\Core\Lua.cs" />
-    <Compile Include="Assets\uLua\Core\LuaBase.cs" />
+    <Compile Include="Assets\uLua\Core\LuaState.cs" />
     <Compile Include="Assets\uLua\Core\LuaDLL.cs" />
-    <Compile Include="Assets\uLua\Core\LuaException.cs" />
-    <Compile Include="Assets\uLua\Core\LuaFunction.cs" />
-    <Compile Include="Assets\uLua\Core\LuaGlobalAttribute.cs" />
-    <Compile Include="Assets\uLua\Core\LuaHideAttribute.cs" />
-    <Compile Include="Assets\uLua\Core\LuaRegistrationHelper.cs" />
-    <Compile Include="Assets\uLua\Core\LuaScriptException.cs" />
     <Compile Include="Assets\uLua\Core\LuaStatic.cs" />
-    <Compile Include="Assets\uLua\Core\LuaTable.cs" />
-    <Compile Include="Assets\uLua\Core\LuaUserData.cs" />
-    <Compile Include="Assets\uLua\Core\Metatables.cs" />
-    <Compile Include="Assets\uLua\Core\MethodWrapper.cs" />
-    <Compile Include="Assets\uLua\Core\ObjectTranslator.cs" />
-    <Compile Include="Assets\uLua\Core\ProxyType.cs" />
-    <Compile Include="Assets\uLua\Examples\01_HelloWorld\HelloWorld.cs" />
-    <Compile Include="Assets\uLua\Examples\02_CreateGameObject\CreateGameObject.cs" />
-    <Compile Include="Assets\uLua\Examples\03_AccessingLuaVariables\AccessingLuaVariables.cs" />
-    <Compile Include="Assets\uLua\Examples\04_ScriptsFromFile\ScriptsFromFile.cs" />
-    <Compile Include="Assets\uLua\Examples\05_CallLuaFunction\CallLuaFunction.cs" />
-    <Compile Include="Assets\uLua\Examples\06_LuaCoroutines\LuaCoroutines.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Game\Resources\lua\class.lua.txt" />
-    <None Include="Assets\Game\Resources\lua\main.lua.txt" />
     <None Include="Assets\Game\Resources\luaex\Director.lua.txt" />
     <None Include="Assets\Game\Resources\luaex\class.lua.txt" />
     <None Include="Assets\Game\Resources\luaex\main.lua.txt" />
@@ -335,8 +316,6 @@
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 2.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed 3.shader" />
     <None Include="Assets\NGUI\Resources\Shaders\Unlit - Transparent Packed.shader" />
-    <None Include="Assets\uLua\Examples\04_ScriptsFromFile\04_ScriptsFromFile.lua.txt" />
-    <None Include="Assets\uLua\README.txt" />
     <None Include="Assets\uLua\Source\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
