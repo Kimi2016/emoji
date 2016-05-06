@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityVS.emoji.CSharp", "UnityVS.emoji.CSharp.csproj", "{C0749FDE-34A9-AF67-D263-F8F75282F624}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityVS.emoji.CSharp.Editor", "UnityVS.emoji.CSharp.Editor.csproj", "{378EE847-24EB-B76B-DE94-1B41BCE36221}"
 EndProject
-Project("{5697748A-77EF-44CA-8824-4F5637E5945B}") = "emoji", "Assets\Game\Resources\emoji.luaproj", "{E439935D-B2A2-46AE-856D-2AA408428F33}"
+Project("{5697748A-77EF-44CA-8824-4F5637E5945B}") = "lua", "Assets\StreamingAssets\lua.luaproj", "{E439935D-B2A2-46AE-856D-2AA408428F33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

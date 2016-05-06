@@ -36,14 +36,16 @@ __________#_______####_______####______________
 UIManager = singleton("UIManager")
 
 function UIManager:ctor()
-    
-    self.m_cachedUINameList = { }        --存在UI的名字
+
+    self.m_cachedUINameList = { }
+    -- 存在UI的名字
     self.cachedUINameList = {
         get = function(this)
             return self.m_cachedUINameList
         end,
     }
-    self.m_achedUIDict = { }            --存储在内存的UI,key为名字
+    -- 存储在内存的UI,key为名字
+    self.m_achedUIDict = { }
 end
 
 Father = class("Father")
@@ -67,7 +69,7 @@ function Father:GetValue()
     return self.m_value
 end
 
-Child = class("Child",Father)
+Child = class("Child", Father)
 
 function Child:ctor()
     self.value = {
@@ -86,4 +88,4 @@ function Child:GetValue()
     self.m_value = self.m_value + 1
     return self.m_value
 end
---endregion
+-- endregion

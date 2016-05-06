@@ -30,7 +30,7 @@
     <Folder Include="lua\ui\manager\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="lua\global.lua" />
+    <Compile Include="lua\preload\regist.lua" />
     <Compile Include="lua\main.lua" />
     <Compile Include="lua\preload\class\class.lua" />
     <Compile Include="lua\preload\struct\Rect.lua" />
