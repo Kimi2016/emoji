@@ -48,9 +48,7 @@ static public class LuaApiMaker {
     public static string saveDir = Application.dataPath + "/Game/Script/LuaWrap/Generate/";
     static BindingFlags binding = BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase;
     static List<Type> typeList = new List<Type> { 
-            typeof(UnityEngine.Object),
             typeof(Transform),
-            typeof(GameObject),
             typeof(Component),
             typeof(MonoBehaviour),
             typeof(Resources),
@@ -58,7 +56,6 @@ static public class LuaApiMaker {
             typeof(UILabel),
             typeof(Director),
             typeof(Scheduler),
-            typeof(UIManager),
     };
 
     static List<string> usingList = new List<string> {

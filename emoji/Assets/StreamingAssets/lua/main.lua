@@ -1,11 +1,12 @@
-print("on")
+require "ui/manager/UIManager"
+
 testtable = {}
 function testtable:test(arg)
     print(arg)
     return "table hellow"
 end
 
-function test(arg)
+test = function(arg)
     print(arg)
     return "hellow"
 end
@@ -56,26 +57,13 @@ local function testOpenWindow(name)
     ui.name = name
 end
 
-local function __G__TRACKBACK__(msg)
-    print("----------------------------------------")
-    print("LUA ERROR: " .. tostring(msg) .. "\n")
-    print(debug.traceback())
-    print("----------------------------------------")
-end
-
 -- ±ÜÃâÄÚ´æÐ¹Â©
 collectgarbage( "setpause", 100)
 collectgarbage( "setstepmul", 5000)
 
-local status, msg = xpcall(
-function()
-    testOpenWindow("ChatView")
-    mUIRoot = nil
-end, __G__TRACKBACK__) 
+testOpenWindow("ChatView")
+local mn = Child:New()
+print(mn.value)
 
-
-
-if not status then  
-    error(msg)  
-end  
+mUIRoot = nil
 

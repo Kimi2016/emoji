@@ -195,6 +195,9 @@ namespace LuaInterface {
             LuaDLL.lua_call(L, 2, 1);
             return 1;
         }
+        public static void print(object message) {
+            Debug.Log("[LUA]: " + message.ToString());
+        }
         #endregion
 
         #region cache

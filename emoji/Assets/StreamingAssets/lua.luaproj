@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>E439935D-B2A2-46AE-856D-2AA408428F33</ProjectGuid>
+    <!--$guid1$-->
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>
+    </StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="lua\" />
+    <Folder Include="lua\preload\" />
+    <Folder Include="lua\preload\class\" />
+    <Folder Include="lua\preload\struct\" />
+    <Folder Include="lua\ui\" />
+    <Folder Include="lua\ui\manager\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="lua\global.lua" />
+    <Compile Include="lua\main.lua" />
+    <Compile Include="lua\preload\class\class.lua" />
+    <Compile Include="lua\preload\struct\Rect.lua" />
+    <Compile Include="lua\preload\struct\Vector2.lua" />
+    <Compile Include="lua\preload\struct\Vector3.lua" />
+    <Compile Include="lua\preload\struct\Vector4.lua" />
+    <Compile Include="lua\ui\manager\UIManager.lua" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>

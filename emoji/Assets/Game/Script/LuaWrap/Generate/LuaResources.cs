@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaResources
-* Created:  5/4/2016 11:45:56 AM
+* Created:  5/6/2016 3:57:08 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  Resources的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -93,11 +93,11 @@ namespace LuaInterface {
 
             object type1 = LuaStatic.GetObj(L, 2);
             Type arg1 = LuaStatic.GetType(type1);
-            UnityEngine.Object[] objs = UnityEngine.Resources.FindObjectsOfTypeAll(arg1);
+            IEnumerable objs = (IEnumerable)UnityEngine.Resources.FindObjectsOfTypeAll(arg1);
             LuaDLL.lua_newtable(L);
             int num2 = 0;
             foreach (var item in objs) {
-                LuaStatic.addGameObject2Lua(L, item, (string)type1);
+                LuaStatic.addGameObject2Lua(L, (UnityEngine.Object)item, (string)type1);
                 LuaDLL.lua_pushnumber(L, (double)(++num2));
                 LuaDLL.lua_insert(L, -2);
                 LuaDLL.lua_settable(L, -3);
@@ -170,11 +170,11 @@ namespace LuaInterface {
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
                 object type2 = LuaStatic.GetObj(L, 3);
                 Type arg2 = LuaStatic.GetType(type2);
-                UnityEngine.Object[] objs = UnityEngine.Resources.LoadAll(arg1, arg2);
+                IEnumerable objs = (IEnumerable)UnityEngine.Resources.LoadAll(arg1, arg2);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
                 foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, (string)type2);
+                    LuaStatic.addGameObject2Lua(L, (UnityEngine.Object)item, (string)type2);
                     LuaDLL.lua_pushnumber(L, (double)(++num2));
                     LuaDLL.lua_insert(L, -2);
                     LuaDLL.lua_settable(L, -3);
@@ -185,11 +185,11 @@ namespace LuaInterface {
             if (count == 2 &&
                 LuaStatic.CheckType(L, typeof(String), 2)) {
                 String arg1 = (String)LuaStatic.GetObj(L, 2);
-                UnityEngine.Object[] objs = UnityEngine.Resources.LoadAll(arg1);
+                IEnumerable objs = (IEnumerable)UnityEngine.Resources.LoadAll(arg1);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
                 foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, "Object");
+                    LuaStatic.addGameObject2Lua(L, (UnityEngine.Object)item, "Object");
                     LuaDLL.lua_pushnumber(L, (double)(++num2));
                     LuaDLL.lua_insert(L, -2);
                     LuaDLL.lua_settable(L, -3);

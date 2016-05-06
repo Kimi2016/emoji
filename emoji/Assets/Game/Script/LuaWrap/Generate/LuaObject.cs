@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaObject
-* Created:  5/4/2016 11:45:55 AM
+* Created:  5/6/2016 3:57:07 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  Object的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -151,11 +151,11 @@ namespace LuaInterface {
 
             object type1 = LuaStatic.GetObj(L, 2);
             Type arg1 = LuaStatic.GetType(type1);
-            UnityEngine.Object[] objs = UnityEngine.Object.FindObjectsOfType(arg1);
+            IEnumerable objs = (IEnumerable)UnityEngine.Object.FindObjectsOfType(arg1);
             LuaDLL.lua_newtable(L);
             int num2 = 0;
             foreach (var item in objs) {
-                LuaStatic.addGameObject2Lua(L, item, (string)type1);
+                LuaStatic.addGameObject2Lua(L, (UnityEngine.Object)item, (string)type1);
                 LuaDLL.lua_pushnumber(L, (double)(++num2));
                 LuaDLL.lua_insert(L, -2);
                 LuaDLL.lua_settable(L, -3);

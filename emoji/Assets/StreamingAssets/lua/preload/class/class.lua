@@ -1,32 +1,43 @@
+--region type
 local function istype(value, targetType)
     return type(value) == targetType
 end
+
+
+
 local function lookupMetatable(t,index)
-    local meta = getmetatable(t)
-    if not(meta) then
-        return nil
+    local value
+    if (istype(t,"table")) then
+        value = rawget(t, index)
     end
-    if (meta[index]) then
-        return meta[index]
+    
+    if value then
+        return value
     else
+        local meta = getmetatable(t)
+        if not(meta) then
+            return nil
+        end
         return lookupMetatable(meta, index)
     end
 
 end
-
 function readIndex(t, index)
     local value = lookupMetatable(t, index)
     if (istype(index, "string")) then
         if (istype(value, "table")) then     
-            if (istype(value["get"], "function")) then               
+            if (istype(rawget(value, "get"), "function")) then               
                 value = value.get(t)
+            else
+                value = rawget(t, index)
             end
         elseif (not(istype(value, "function"))) then       
-            value = nil
+            value = rawget(t, index)
         end
     end
     assert(value ~= nil,"value nil attempt to read a private value!")
     return value
+    --print("144dd")
 end
 
 function writeIndex(t, index, value)
@@ -41,43 +52,14 @@ function writeIndex(t, index, value)
             return
         end
     end
-    getmetatable(t)[index] = value
+    t[index] = value
 end
         
 function readonly(targetTable)
-    local proxy = { }
+    local proxy = { proto = targetTable }
     local mt = {
-        __index = function(t, index)
-            local value = targetTable[index]
-            if (istype(index, "string")) then
-                if (istype(value, "table")) then
-                    if (istype(value["get"], "function")) then
-                        value = value.get()
-                    end
-                elseif (istype(value, "function")) then
-                    value = targetTable[index]
-                else
-                    value = nil
-                end
-            end
-            assert(value ~= nil,"value nil attempt to read a private value!")
-            return value
-        end,
-        __newindex = function(t, index, value)
-            if (istype(index, "string")) then
-                if (istype(targetTable[index], "table")) then
-                    if (istype(targetTable[index]["set"], "function")) then
-                        targetTable[index]["set"](value)
-                        return
-                    end
-                end
-            else
-                targetTable[index] = value
-                return
-            end
-            assert(false, "attempt to update a read-only table!")
-        end
-
+        __index = function(t,index) return readIndex(targetTable, index) end,
+        __newindex = function(t, index, value) writeIndex(targetTable, index, value) end
     }
     setmetatable(proxy, mt)
     return proxy
@@ -91,8 +73,9 @@ function closeGlobalField()
     }
      setmetatable(_G, mt) 
 end
+--endregion
 
-
+--region class
 function clone(object)
     local lookup_table = { }
     local function _copy(object)
@@ -109,6 +92,14 @@ function clone(object)
         return setmetatable(new_table, getmetatable(object))
     end
     return _copy(object)
+end
+
+local function ctor(instance,cls,...)
+    setmetatable(instance, cls)
+    if cls.super then
+        ctor(cls,cls.super,...)
+    end
+    getmetatable(instance):ctor(...)
 end
 
 -- Create an class.
@@ -160,14 +151,30 @@ function class(classname, super)
         cls.__ctype = 2
         -- lua
         cls.__index = cls
+        cls.__newindex = cls
 
         function cls.New(...)
-            local instance = setmetatable( {}, cls)
-            instance.class = cls
-            instance:ctor(...)
+            local instance = {}
+            ctor(instance,cls,...)
             return readonly(instance)
         end
     end
 
     return cls
 end
+
+local function GetInstance(t)
+    if not(rawget(t, "_instance")) then
+        rawset(t, "_instance", t:New())
+    end
+
+    return t._instance
+end
+function singleton(classname, super)
+    local instance = readonly(class(classname, super))
+    instance.GetInstance = function() 
+        return GetInstance(instance)
+    end
+    return instance
+end
+--endregion

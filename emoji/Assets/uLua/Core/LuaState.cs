@@ -36,7 +36,6 @@ namespace LuaInterface {
             // We need to keep this in a managed reference so the delegate doesn't get garbage collected
             panicCallback = new LuaCSFunction(panic);
             LuaDLL.lua_atpanic(L, panicCallback);
-
             printFunction = new LuaCSFunction(print);
             LuaDLL.lua_pushstdcallcfunction(L, printFunction);
             LuaDLL.lua_setfield(L, LuaIndexes.LUA_GLOBALSINDEX, "print");
@@ -92,7 +91,7 @@ namespace LuaInterface {
                     return LuaStatic.PopValues(L, oldTop);
                 }
                 else {
-                    LuaStatic.traceback(L, "do string fail");
+                    ThrowExceptionFromError(oldTop);
                 }
 
             }
@@ -135,7 +134,7 @@ namespace LuaInterface {
                 data = file.bytes;
             }
             else {
-                using (Stream s = new FileStream(Application.dataPath + "/Game/Resources/" + fileName, FileMode.Open, FileAccess.ReadWrite)) {
+                using (Stream s = new FileStream(Application.streamingAssetsPath + "/" + fileName, FileMode.Open, FileAccess.ReadWrite)) {
                     data = new byte[s.Length];
                     s.Read(data, 0, data.Length);
                     s.Close();
@@ -166,14 +165,14 @@ namespace LuaInterface {
         }
         public object[] CallTableFunction(string tableName, string functionName, object[] args, int returnNum) {
             if (!LuaDLL.lua_checkstack(L, args.Length + 6)) {
-                LuaStatic.traceback(L, "Lua stack overflow");
+                LuaStatic.print("Lua stack overflow");
                 return null;
             }
             int oldTop = LuaDLL.lua_gettop(L);
             LuaDLL.lua_getglobal(L, tableName);
             if (LuaDLL.lua_type(L, -1) != LuaTypes.LUA_TTABLE) {
                 LuaDLL.lua_pop(L, 1);
-                LuaStatic.traceback(L, "Not a Lua table");
+                LuaStatic.print("Not a Lua table");
                 return null;
             }
             LuaDLL.lua_getfield(L, -1, functionName);
@@ -181,13 +180,13 @@ namespace LuaInterface {
             LuaDLL.lua_settop(L, oldTop);
             return ret;
         }
-        private object[] CallLuaFunction(object[] args, int returnNum,bool isTable) {
+        private object[] CallLuaFunction(object[] args, int returnNum, bool isTable) {
             int nArgs = 0;
             int oldTop = LuaDLL.lua_gettop(L) - 1;
 
             if (LuaDLL.lua_type(L, -1) != LuaTypes.LUA_TFUNCTION) {
                 LuaDLL.lua_pop(L, 1);
-                LuaStatic.traceback(L, "Not a Lua function");
+                LuaStatic.print("Not a Lua function");
                 return null;
             }
             if (args != null) {
@@ -247,8 +246,7 @@ namespace LuaInterface {
                 }
 
                 LuaDLL.lua_pop(L, 1);  /* pop result */
-
-                Debug.Log("LUA: " + s);
+                LuaStatic.print(s);
             }
             return 0;
         }
@@ -260,15 +258,10 @@ namespace LuaInterface {
             fileName = LuaDLL.lua_tostring(L, 1);
             fileName = fileName.Replace('.', '/');
             fileName = "lua/" + fileName + ".lua";
-            // Load with Unity3D resources
-            //TextAsset file = (TextAsset)Resources.Load(fileName);
-            //if (file == null) {
-            //    return 0;
-            //}
 
             // test code just window
             byte[] data = { };
-            using (Stream s = new FileStream(Application.dataPath + "/Game/Resources/" + fileName, FileMode.Open, FileAccess.ReadWrite)) {
+            using (Stream s = new FileStream(Application.streamingAssetsPath + "/" + fileName, FileMode.Open, FileAccess.ReadWrite)) {
                 data = new byte[s.Length];
                 s.Read(data, 0, data.Length);
                 s.Close();
@@ -289,15 +282,9 @@ namespace LuaInterface {
 
             int n = LuaDLL.lua_gettop(L);
 
-            // Load with Unity3D resources
-            //TextAsset file = (TextAsset)Resources.Load(fileName);
-            //if (file == null) {
-            //    return LuaDLL.lua_gettop(L) - n;
-            //}
-
             // test code just window
             byte[] data = { };
-            using (Stream s = new FileStream(Application.dataPath + "/Game/Resources/" + fileName, FileMode.Open, FileAccess.ReadWrite)) {
+            using (Stream s = new FileStream(Application.streamingAssetsPath + "/" + fileName, FileMode.Open, FileAccess.ReadWrite)) {
                 data = new byte[s.Length];
                 s.Read(data, 0, data.Length);
                 s.Close();

@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaUILabel
-* Created:  5/4/2016 11:45:56 AM
+* Created:  5/6/2016 3:57:08 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  UILabel的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -150,11 +150,11 @@ namespace LuaInterface {
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
             UnityEngine.Transform arg1 = (UnityEngine.Transform)LuaStatic.GetObj(L, 2);
-            UnityEngine.Vector3[] objs = obj.GetSides(arg1);
+            IEnumerable objs = (IEnumerable)obj.GetSides(arg1);
             LuaDLL.lua_newtable(L);
             int num2 = 0;
             foreach (var item in objs) {
-                LuaDLL.lua_pushvector3(L, item);
+                LuaDLL.lua_pushvector3(L, (UnityEngine.Vector3)item);
                 LuaDLL.lua_pushnumber(L, (double)(++num2));
                 LuaDLL.lua_insert(L, -2);
                 LuaDLL.lua_settable(L, -3);
@@ -1262,11 +1262,11 @@ namespace LuaInterface {
                 return result;
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
-            UnityEngine.Vector3[] objs = obj.localCorners;
+            IEnumerable objs = (IEnumerable)obj.localCorners;
             LuaDLL.lua_newtable(L);
             int num2 = 0;
             foreach (var item in objs) {
-                LuaDLL.lua_pushvector3(L, item);
+                LuaDLL.lua_pushvector3(L, (UnityEngine.Vector3)item);
                 LuaDLL.lua_pushnumber(L, (double)(++num2));
                 LuaDLL.lua_insert(L, -2);
                 LuaDLL.lua_settable(L, -3);
@@ -1285,11 +1285,11 @@ namespace LuaInterface {
                 return result;
             }
             UILabel obj = LuaStatic.GetObj(L, 1) as UILabel;
-            UnityEngine.Vector3[] objs = obj.worldCorners;
+            IEnumerable objs = (IEnumerable)obj.worldCorners;
             LuaDLL.lua_newtable(L);
             int num2 = 0;
             foreach (var item in objs) {
-                LuaDLL.lua_pushvector3(L, item);
+                LuaDLL.lua_pushvector3(L, (UnityEngine.Vector3)item);
                 LuaDLL.lua_pushnumber(L, (double)(++num2));
                 LuaDLL.lua_insert(L, -2);
                 LuaDLL.lua_settable(L, -3);

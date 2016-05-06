@@ -28,7 +28,7 @@ __________#_______####_______####______________
                 我们的未来没有BUG              
 * ==============================================================================
 * Filename: LuaComponent
-* Created:  5/4/2016 11:45:55 AM
+* Created:  5/6/2016 3:57:07 PM
 * Author:   HaYaShi ToShiTaKa and tolua#
 * Purpose:  Component的lua导出类,本类由插件自动生成
 * ==============================================================================
@@ -157,11 +157,11 @@ namespace LuaInterface {
                 UnityEngine.Component obj = LuaStatic.GetObj(L, 1) as UnityEngine.Component;
                 object type1 = LuaStatic.GetObj(L, 2);
                 Type arg1 = LuaStatic.GetType(type1);
-                UnityEngine.Component[] objs = obj.GetComponentsInChildren(arg1);
+                IEnumerable objs = (IEnumerable)obj.GetComponentsInChildren(arg1);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
                 foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, (string)type1);
+                    LuaStatic.addGameObject2Lua(L, (UnityEngine.Component)item, (string)type1);
                     LuaDLL.lua_pushnumber(L, (double)(++num2));
                     LuaDLL.lua_insert(L, -2);
                     LuaDLL.lua_settable(L, -3);
@@ -176,11 +176,11 @@ namespace LuaInterface {
                 object type1 = LuaStatic.GetObj(L, 2);
                 Type arg1 = LuaStatic.GetType(type1);
                 Boolean arg2 = (Boolean)LuaStatic.GetObj(L, 3);
-                UnityEngine.Component[] objs = obj.GetComponentsInChildren(arg1, arg2);
+                IEnumerable objs = (IEnumerable)obj.GetComponentsInChildren(arg1, arg2);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
                 foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, "Component");
+                    LuaStatic.addGameObject2Lua(L, (UnityEngine.Component)item, "Component");
                     LuaDLL.lua_pushnumber(L, (double)(++num2));
                     LuaDLL.lua_insert(L, -2);
                     LuaDLL.lua_settable(L, -3);
@@ -220,11 +220,11 @@ namespace LuaInterface {
                 UnityEngine.Component obj = LuaStatic.GetObj(L, 1) as UnityEngine.Component;
                 object type1 = LuaStatic.GetObj(L, 2);
                 Type arg1 = LuaStatic.GetType(type1);
-                UnityEngine.Component[] objs = obj.GetComponentsInParent(arg1);
+                IEnumerable objs = (IEnumerable)obj.GetComponentsInParent(arg1);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
                 foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, (string)type1);
+                    LuaStatic.addGameObject2Lua(L, (UnityEngine.Component)item, (string)type1);
                     LuaDLL.lua_pushnumber(L, (double)(++num2));
                     LuaDLL.lua_insert(L, -2);
                     LuaDLL.lua_settable(L, -3);
@@ -239,11 +239,11 @@ namespace LuaInterface {
                 object type1 = LuaStatic.GetObj(L, 2);
                 Type arg1 = LuaStatic.GetType(type1);
                 Boolean arg2 = (Boolean)LuaStatic.GetObj(L, 3);
-                UnityEngine.Component[] objs = obj.GetComponentsInParent(arg1, arg2);
+                IEnumerable objs = (IEnumerable)obj.GetComponentsInParent(arg1, arg2);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
                 foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, "Component");
+                    LuaStatic.addGameObject2Lua(L, (UnityEngine.Component)item, "Component");
                     LuaDLL.lua_pushnumber(L, (double)(++num2));
                     LuaDLL.lua_insert(L, -2);
                     LuaDLL.lua_settable(L, -3);
@@ -266,11 +266,11 @@ namespace LuaInterface {
                 UnityEngine.Component obj = LuaStatic.GetObj(L, 1) as UnityEngine.Component;
                 object type1 = LuaStatic.GetObj(L, 2);
                 Type arg1 = LuaStatic.GetType(type1);
-                UnityEngine.Component[] objs = obj.GetComponents(arg1);
+                IEnumerable objs = (IEnumerable)obj.GetComponents(arg1);
                 LuaDLL.lua_newtable(L);
                 int num2 = 0;
                 foreach (var item in objs) {
-                    LuaStatic.addGameObject2Lua(L, item, (string)type1);
+                    LuaStatic.addGameObject2Lua(L, (UnityEngine.Component)item, (string)type1);
                     LuaDLL.lua_pushnumber(L, (double)(++num2));
                     LuaDLL.lua_insert(L, -2);
                     LuaDLL.lua_settable(L, -3);
