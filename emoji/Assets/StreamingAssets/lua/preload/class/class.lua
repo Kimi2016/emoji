@@ -37,7 +37,6 @@ function readIndex(t, index)
     end
     assert(value ~= nil,"value nil attempt to read a private value!")
     return value
-    --print("144dd")
 end
 
 function writeIndex(t, index, value)
@@ -94,12 +93,12 @@ function clone(object)
     return _copy(object)
 end
 
-local function ctor(instance,cls,...)
+local function ctor(proto,instance,cls,...)
     setmetatable(instance, cls)
     if cls.super then
-        ctor(cls,cls.super,...)
+        ctor(proto,cls,cls.super,...)
     end
-    getmetatable(instance):ctor(...)
+    getmetatable(instance).ctor(proto,instance,...)
 end
 
 -- Create an class.
@@ -151,11 +150,10 @@ function class(classname, super)
         cls.__ctype = 2
         -- lua
         cls.__index = cls
-        cls.__newindex = cls
 
         function cls.New(...)
             local instance = {}
-            ctor(instance,cls,...)
+            ctor(instance,instance,cls,...)
             return readonly(instance)
         end
     end

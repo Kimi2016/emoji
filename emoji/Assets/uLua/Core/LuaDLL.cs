@@ -451,8 +451,6 @@ namespace LuaInterface {
             LuaDLL.lua_getfield(luaState, LuaIndexes.LUA_REGISTRYINDEX, meta);
         }
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr luaL_checkudata(IntPtr luaState, int stackPos, string meta);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool luaL_getmetafield(IntPtr luaState, int stackPos, string field);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int lua_load(IntPtr luaState, LuaChunkReader chunkReader, ref ReaderInfo data, string chunkName);
@@ -461,16 +459,6 @@ namespace LuaInterface {
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int luaL_loadfile(IntPtr luaState, string filename);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool luaL_checkmetatable(IntPtr luaState, int obj);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luanet_tonetobject(IntPtr luaState, int obj);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luanet_newudata(IntPtr luaState, int val);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luanet_rawnetobj(IntPtr luaState, int obj);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int luanet_checkudata(IntPtr luaState, int obj, string meta);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_error(IntPtr luaState);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool lua_checkstack(IntPtr luaState, int extra);
@@ -478,8 +466,6 @@ namespace LuaInterface {
         public static extern int lua_next(IntPtr luaState, int index);
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void lua_pushlightuserdata(IntPtr luaState, IntPtr udata);
-        [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr luanet_gettag();
         [DllImport(LUADLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void luaL_where(IntPtr luaState, int level);
     }

@@ -64,8 +64,7 @@ end
 
 function Father:GetValue()
     self = self.proto
-    self.m_value = self.m_value + 1
-    print("father")
+    self.m_value = self.m_value
     return self.m_value
 end
 
@@ -74,7 +73,7 @@ Child = class("Child", Father)
 function Child:ctor()
     self.value = {
         get = function(this)
-            return self.m_value + 1
+            return self.m_value
         end,
         set = function(this, value)
             self.m_value = value

@@ -63,7 +63,11 @@ collectgarbage( "setstepmul", 5000)
 
 testOpenWindow("ChatView")
 local mn = Child:New()
-print(mn.value)
+local mn1 = Child:New()
+
+print(mn1.value)
+print(mn:GetValue())
+print(mn1.value)
 
 mUIRoot = nil
 
