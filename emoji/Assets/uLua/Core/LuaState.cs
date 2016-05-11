@@ -150,7 +150,7 @@ namespace LuaInterface {
         }
         public object[] CallGlobalFunction(string functionName, object[] args, int returnNum) {
             if (!LuaDLL.lua_checkstack(L, args.Length + 6)) {
-                LuaStatic.traceback(L, "Lua stack overflow");
+                LuaStatic.print("Lua stack overflow");
                 return null;
             }
             int oldTop = LuaDLL.lua_gettop(L);
