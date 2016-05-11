@@ -20,21 +20,22 @@ local function lookupMetatable(t,index)
         end
         return lookupMetatable(meta, index)
     end
-
 end
+
 function readIndex(t, index)
     local value = lookupMetatable(t, index)
     if (istype(index, "string")) then
-        if (istype(value, "table")) then     
-            if (istype(rawget(value, "get"), "function")) then               
+        if (istype(value, "table")) then
+            if (istype(rawget(value, "get"), "function")) then
                 value = value.get(t)
             else
                 value = rawget(t, index)
             end
-        elseif (not(istype(value, "function"))) then       
+        elseif (not(istype(value, "function"))) then
             value = rawget(t, index)
         end
     end
+    
     assert(value ~= nil,"value nil attempt to read a private value!")
     return value
 end

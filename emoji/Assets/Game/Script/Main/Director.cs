@@ -86,7 +86,7 @@ public class Director : MonoBehaviour {
 	void Awake() {
 		mInstance = this;
 		mScheduler = Scheduler.MakeInstance();
-		//mUIManager = UIManager.MakeInstance();
+		mUIManager = UIManager.MakeInstance();
 		mEventDispatcher = EventDispatcher.MakeInstance();
 		mLuaState = new LuaState();
 	}
@@ -94,16 +94,6 @@ public class Director : MonoBehaviour {
         mLuaState.DoFile("lua/preload/regist.lua");
         LuaRegister.Register(mLuaState.L);
         mLuaState.DoFile("lua/main.lua");
-        object[] args = mLuaState.CallGlobalFunction("test", new object[] { "test global function" }, 1);
-        if (args == null) return;
-        foreach (var item in args) {
-            print(item.ToString());
-        }
-
-		//args = mLuaState.CallTableFunction("testtable", "test", new object[] { "test table function" }, 1);
-		//foreach (var item in args) {
-		//	print(item.ToString());
-		//}
 	}
 	void Update() { 
 		
